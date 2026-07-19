@@ -1,0 +1,314 @@
+
+# ============================================================
+#  ChartLie Detector — .gitignore
+#  Full-Stack: Python (FastAPI) + React + Vite + TypeScript
+# ============================================================
+
+
+# ──────────────────────────────────────────────────────────
+#  🐍  PYTHON
+# ──────────────────────────────────────────────────────────
+
+# Byte-compiled / optimised files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+venv/
+.venv/
+env/
+.env.local
+ENV/
+env.bak/
+venv.bak/
+.env
+
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+pip-wheel-metadata/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# PyInstaller
+*.manifest
+*.spec
+
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+.pytest_cache/
+
+# mypy / type checkers
+.mypy_cache/
+.dmypy.json
+dmypy.json
+.pyre/
+
+# pyenv
+.python-version
+
+# Celery
+celerybeat-schedule
+celerybeat.pid
+
+# SageMath parsed files
+*.sage.py
+
+# Spyder project settings
+.spyderproject.db
+.spyproject
+
+# Rope project settings
+.ropeproject
+
+# mkdocs documentation
+/site
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# IPython
+profile_default/
+ipython_config.py
+
+# PEP 517
+.pdm.toml
+__pypackages__/
+
+
+# ──────────────────────────────────────────────────────────
+#  🔐  ENVIRONMENT & SECRETS
+# ──────────────────────────────────────────────────────────
+
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.cert
+*.p12
+secrets.json
+secrets.yaml
+secrets.yml
+
+
+# ──────────────────────────────────────────────────────────
+#  ⚛️   NODE / REACT / VITE / TYPESCRIPT
+# ──────────────────────────────────────────────────────────
+
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# Build output
+dist/
+dist-ssr/
+build/
+out/
+
+# Vite cache
+.vite/
+vite.config.js.timestamp-*
+vite.config.ts.timestamp-*
+
+# TypeScript build info
+*.tsbuildinfo
+
+# Testing
+coverage/
+*.lcov
+.nyc_output/
+cypress/screenshots/
+cypress/videos/
+playwright-report/
+test-results/
+
+# ESLint / Oxlint
+.eslintcache
+.oxlintcache
+
+# Parcel
+.parcel-cache/
+
+# SvelteKit / Next.js (if added later)
+.next/
+.svelte-kit/
+
+# Yarn
+.yarn/cache
+.yarn/unplugged
+.yarn/build-state.yml
+.yarn/install-state.gz
+.pnp.*
+
+# pnpm
+.pnpm-store/
+
+
+# ──────────────────────────────────────────────────────────
+#  📁  PROJECT-SPECIFIC
+# ──────────────────────────────────────────────────────────
+
+# Uploaded chart images (user data)
+backend/uploads/
+uploads/
+
+# Generated PDF / analysis reports
+backend/reports/
+reports/
+
+# Cached analysis results
+backend/datasets/
+datasets/
+
+# AI model outputs / temp files
+backend/app/output/
+*.pkl
+*.joblib
+
+# Downloaded model datasets (e.g. MisViz)
+backend/download_misviz.py.cache
+
+
+# ──────────────────────────────────────────────────────────
+#  🐳  DOCKER
+# ──────────────────────────────────────────────────────────
+
+# Docker override files
+docker-compose.override.yml
+docker-compose.local.yml
+
+# Docker volumes (if mounted locally)
+.docker/
+
+
+# ──────────────────────────────────────────────────────────
+#  🖥️   IDEs & EDITORS
+# ──────────────────────────────────────────────────────────
+
+# VS Code
+.vscode/
+!.vscode/extensions.json
+!.vscode/settings.json
+
+# JetBrains (PyCharm, WebStorm, etc.)
+.idea/
+*.iws
+*.iml
+*.ipr
+
+# Sublime Text
+*.sublime-project
+*.sublime-workspace
+
+# Vim / Neovim
+*.swp
+*.swo
+*~
+.netrwhist
+
+# Emacs
+\#*\#
+.\#*
+
+
+# ──────────────────────────────────────────────────────────
+#  💻  OPERATING SYSTEM
+# ──────────────────────────────────────────────────────────
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+.Spotlight-V100
+.Trashes
+Icon?
+
+# Windows
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+[Dd]esktop.ini
+$RECYCLE.BIN/
+*.lnk
+
+# Linux
+*~
+
+
+# ──────────────────────────────────────────────────────────
+#  📝  LOGS & TEMPORARY FILES
+# ──────────────────────────────────────────────────────────
+
+*.log
+logs/
+*.tmp
+*.temp
+*.bak
+*.swp
+*.orig
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+
+# ──────────────────────────────────────────────────────────
+#  🔍  MISC
+# ──────────────────────────────────────────────────────────
+
+# Compiled files
+*.com
+*.class
+*.dll
+*.exe
+*.o
+*.so
+
+# Archives
+*.7z
+*.dmg
+*.gz
+*.iso
+*.jar
+*.rar
+*.tar
+*.zip
+
+# Lock files (keep package-lock.json, exclude others if needed)
+# Uncomment if you want to ignore lock files:
+# package-lock.json
+# yarn.lock

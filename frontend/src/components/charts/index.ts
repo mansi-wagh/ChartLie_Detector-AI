@@ -1,0 +1,2 @@
+// Charts components placeholder
+export {};
