@@ -5,13 +5,9 @@ API usage: 1 Gemini call per upload.
 Model is configured via GEMINI_MODEL in .env (default: gemini-2.0-flash).
 """
 
-from google import genai
-
-from app.core.config import GEMINI_API_KEY, GEMINI_MODEL
+from app.core.config import GEMINI_MODEL, get_genai_client
 from app.core.logging import logger
 from app.langchain.prompt_template import audit_prompt
-
-client = genai.Client(api_key=GEMINI_API_KEY)
 
 
 def generate_report(score: int, severity: str, violations: list) -> str:
@@ -34,6 +30,7 @@ def generate_report(score: int, severity: str, violations: list) -> str:
 
     logger.info(f"[Report] Sending to Gemini — model: {GEMINI_MODEL}")
 
+    client = get_genai_client()
     response = client.models.generate_content(
         model=GEMINI_MODEL,
         contents=prompt

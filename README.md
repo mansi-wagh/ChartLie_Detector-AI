@@ -1,3 +1,13 @@
+---
+title: ChartLie Detector
+emoji: 📊
+colorFrom: indigo
+colorTo: blue
+sdk: docker
+app_port: 7860
+short_description: Detect misleading data visualizations using Vision-Language Models.
+---
+
 <div align="center">
 
 <br/>

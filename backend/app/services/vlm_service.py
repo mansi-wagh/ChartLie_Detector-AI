@@ -8,15 +8,13 @@ Model is configured via GEMINI_MODEL in .env (default: gemini-2.0-flash).
 import json
 from pathlib import Path
 
-from google import genai
 from google.genai import types
 
-from app.core.config import GEMINI_API_KEY, GEMINI_MODEL
+from app.core.config import GEMINI_MODEL, get_genai_client
 from app.core.logging import logger
 from app.models.chart_info import ChartInfo
 from app.prompts.vision_prompt import VISION_PROMPT
 
-client = genai.Client(api_key=GEMINI_API_KEY)
 
 
 def analyze_chart(image_path: str, mime_type: str) -> dict:
@@ -52,6 +50,7 @@ def analyze_chart(image_path: str, mime_type: str) -> dict:
                 f"size: {len(image_bytes):,} bytes")
 
     try:
+        client = get_genai_client()
         response = client.models.generate_content(
             model=GEMINI_MODEL,
             contents=[

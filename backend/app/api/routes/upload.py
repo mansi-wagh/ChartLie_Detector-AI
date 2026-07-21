@@ -84,10 +84,14 @@ async def upload_chart(file: UploadFile = File(...)):
         logger.error(f"[Upload] Unexpected error: {exc}", exc_info=True)
         raise HTTPException(status_code=500, detail=f"Analysis failed: {exc}")
 
+    pdf_filename = Path(result["pdf_report"]).name
+    pdf_url = f"/api/reports/{pdf_filename}"
+
     return {
         "status": "success",
         "filename": file.filename,
         "image_hash": image_hash,
         "saved_path": str(save_path),
+        "pdf_url": pdf_url,
         **result
     }
