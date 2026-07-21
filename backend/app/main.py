@@ -57,8 +57,13 @@ if FRONTEND_DIST.exists():
 
     @app.get("/{full_path:path}")
     async def serve_spa(full_path: str):
-        if full_path.startswith("api/") or full_path.startswith("reports/") or full_path.startswith("uploads/"):
-            return None
+        if (
+            full_path.startswith("api")
+            or full_path.startswith("reports")
+            or full_path.startswith("uploads")
+        ):
+            from fastapi import HTTPException
+            raise HTTPException(status_code=404, detail="Not Found")
         file_path = FRONTEND_DIST / full_path
         if file_path.exists() and file_path.is_file():
             return FileResponse(file_path)

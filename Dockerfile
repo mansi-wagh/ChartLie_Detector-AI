@@ -26,11 +26,20 @@ COPY backend/ .
 # Copy built static frontend assets
 COPY --from=frontend-builder /frontend/dist /app/frontend_dist
 
-# Create storage directories and set permissions for HF Spaces non-root user
-RUN mkdir -p /app/uploads /app/reports && chmod -R 777 /app/uploads /app/reports /app
+# Create storage directories and set permissions
+RUN mkdir -p /app/uploads /app/reports
+
+# Create a non-root user with UID 1000 (standard for Hugging Face Spaces)
+RUN useradd -m -u 1000 user && chown -R user:user /app
+USER user
+
+# Set environment variables for the non-root user
+ENV HOME=/home/user \
+    PATH=/home/user/.local/bin:$PATH
 
 # Hugging Face Spaces uses port 7860
 EXPOSE 7860
 
 # Launch Uvicorn server on port 7860
 CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "7860"]
+
