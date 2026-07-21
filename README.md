@@ -73,6 +73,7 @@ short_description: Detect misleading data visualizations using Vision-Language M
 
 ## ✨ Features
 
+<<<<<<< HEAD
 | Feature | Description |
 |---|---|
 | 🧠 **Gemini Vision AI** | Extracts structured chart metadata using Google's Gemini Flash Lite multimodal model |
@@ -85,12 +86,49 @@ short_description: Detect misleading data visualizations using Vision-Language M
 | ⚡ **Result Caching** | Cache layer prevents redundant AI calls for identical images |
 | 🐳 **Docker Ready** | Full `docker-compose.yml` for one-command deployment |
 | 🔌 **REST API** | Clean FastAPI endpoints, fully documented via auto-generated Swagger UI |
+=======
+The architecture and heuristics of ChartLieDetector are directly grounded in the **ACL 2026 Misviz Benchmark** established by **Tonglet et al.** 
+
+Historically, automated chart auditing struggled due to the lack of standard datasets cataloging misleading behaviors. The Misviz benchmark addresses this by cataloging and formalizing visual manipulation strategies. ChartLieDetector translates these theoretical research definitions into a practical, production-grade application, establishing one of the first open implementations of the Misviz benchmark available.
+
+---
+
+## 📊 The 8 Misleader Categories
+
+ChartLieDetector evaluates uploaded images against the eight primary deception methods detailed in the Misviz benchmark:
+
+| Icon | Category | Definition & Deceptive Impact |
+| :---: | :--- | :--- |
+| ✂️ | **Truncated Y-Axis** | The vertical scale starts at a non-zero value, artificially inflating minor differences between data points or bars. |
+| 🔄 | **Inverted Axis** | Reversing axis directions (e.g., zero at the top) to trick readers into seeing growth as a decline or vice-versa. |
+| 📐 | **Inconsistent Scale Intervals** | Axis tick intervals vary in value (e.g., non-logarithmic non-uniform increments), distorting slopes and trends. |
+| 🍒 | **Cherry-picked Data Range** | Isolating a narrow slice of a chart timeline to support a narrative while hiding structural trends. |
+| 🖼️ | **Misleading Aspect Ratio / Area** | Stretching or compressing chart dimensions, or mapping variables to circle radius instead of area to skew proportional sizes. |
+| ⚖️ | **Dual Axis Manipulation** | Overlaying two independent metrics on distinct Y-scales to imply false correlations or hide relative divergence. |
+| 📉 | **Missing Baseline** | Eliminating reference baselines entirely, preventing comparative assessment of scale and value heights. |
+| ⏳ | **Selective Time Range** | Selectively cutting periods (e.g., excluding seasonal corrections) to force artificial upward or downward lines. |
+
+---
+
+## ⚙️ How It Works
+
+ChartLieDetector processes images through a structured pipeline:
+
+1. **User Upload**: The user uploads a visualization image (PNG or JPG) to the modern React frontend dashboard.
+2. **Multimodal Extraction**: The backend routes the image to Google Gemini 2.5 Flash. Guided by structured system prompts, the model functions as a Vision-Language Model (VLM), extracting axis attributes, labels, source citations, coordinates, and scale intervals.
+3. **Pydantic Validation**: Extracted parameters are structured and validated against strict Pydantic schemas in the FastAPI backend.
+4. **Deterministic Auditing**: The validated payload enters the python-based rule engine. Pure evaluation functions execute checks mapping to the 8 Misviz benchmark violations.
+5. **Score Aggregation**: If rules are violated, preconfigured weights calculate a Lie Score on a deterministic 0–100 scale.
+6. **Report Generation**: Orchestrates the payload and passes the violations to Gemini to formulate a clear natural language verdict, explaining the exact deception mechanics and recommending visual fixes.
+7. **Dashboard Render**: The React frontend receives the JSON response, rendering interactive analytics and PDF report downloads.
+>>>>>>> 774457b (feat: implement backend API architecture including VLM and explanation chains, and update frontend documentation to React)
 
 ---
 
 ## 🏗️ Architecture
 
 ```mermaid
+<<<<<<< HEAD
 %%{init: {"theme": "base", "themeVariables": {"primaryColor": "#6366f1", "primaryTextColor": "#ffffff", "primaryBorderColor": "#4338ca", "lineColor": "#c4b5fd", "secondaryColor": "#1e1b4b", "tertiaryColor": "#0f0a2e", "edgeLabelBackground": "#312e81", "fontFamily": "monospace"}}}%%
 flowchart TB
     classDef page     fill:#6366f1,stroke:#4338ca,color:#fff,font-weight:bold
@@ -107,6 +145,32 @@ flowchart TB
         P3["🗂️ History"]:::page
         P4["📄 Reports\nPDF View"]:::page
         P5["⚙️ Settings"]:::page
+=======
+graph TD
+    User([User]) -->|Uploads Chart Image| ReactUI[React UI - Dark Theme]
+    ReactUI -->|POST /api/upload| FastAPI[FastAPI Backend Router]
+    
+    subgraph Execution Pipeline
+        FastAPI -->|Extract Image Payload| ImageValidator[Image Validator]
+        ImageValidator -->|Validated Image| GeminiVLM[Gemini 2.5 Flash VLM]
+        GeminiVLM -->|Structured Prompt Analysis| Metadata[Pydantic ChartMetadata Schema]
+        
+        Metadata -->|Parse Attributes| RuleEngine[Deterministic Rule Engine]
+        
+        subgraph Misviz Audit Rules
+            RuleEngine --> R1[Truncated Y-Axis]
+            RuleEngine --> R2[Inverted Axis]
+            RuleEngine --> R3[Inconsistent Scale]
+            RuleEngine --> R4[Cherry-picked Range]
+            RuleEngine --> R5[Aspect/Area Distortion]
+            RuleEngine --> R6[Dual Y-Axis]
+            RuleEngine --> R7[Missing Baseline]
+            RuleEngine --> R8[Selective Time Range]
+        end
+        
+        R1 & R2 & R3 & R4 & R5 & R6 & R7 & R8 -->|Flagged Violations| ScoreEngine[Weighted Scoring Engine]
+        ScoreEngine -->|Sum Penalties min=0, max=100| FinalScore[Lie Score & Severity Bands]
+>>>>>>> 774457b (feat: implement backend API architecture including VLM and explanation chains, and update frontend documentation to React)
     end
 
     RT["🔀 FastAPI Router\nPOST /api/upload"]:::api

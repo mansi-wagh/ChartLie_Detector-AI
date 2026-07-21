@@ -4,7 +4,7 @@ from google import genai
 
 load_dotenv()
 
-# Gemini API — the only VLM provider used in this project
+# Gemini API — standard default model
 GEMINI_MODEL: str = os.getenv("GEMINI_MODEL", "gemini-2.0-flash")
 
 

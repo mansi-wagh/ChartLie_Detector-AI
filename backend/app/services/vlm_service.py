@@ -61,6 +61,8 @@ def analyze_chart(image_path: str, mime_type: str) -> dict:
                 ),
             ],
             config=types.GenerateContentConfig(
+                system_instruction="You are an expert data visualization auditor and vision-language model. Analyze chart images with extreme accuracy.",
+                temperature=0.1,
                 response_mime_type="application/json",
                 response_schema=ChartInfo,
             ),
