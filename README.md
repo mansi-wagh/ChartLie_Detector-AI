@@ -1,19 +1,4 @@
----
-title: ChartLie Detector
-emoji: 📊
-colorFrom: indigo
-colorTo: blue
-sdk: docker
-app_port: 7860
-short_description: Detect misleading data visualizations using Vision-Language Models.
----
 
-<div align="center">
-
-<br/>
-
-<!-- Animated Banner -->
-<img src="https://readme-typing-svg.demolab.com?font=Fira+Code&weight=700&size=38&duration=3000&pause=500&color=6C63FF&center=true&vCenter=true&multiline=true&width=800&height=100&lines=🕵️+ChartLie+Detector;AI-Powered+Chart+Deception+Analysis" alt="ChartLie Detector" />
 
 <br/>
 
