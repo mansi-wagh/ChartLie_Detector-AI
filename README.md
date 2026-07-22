@@ -1,384 +1,163 @@
+# ChartLie Detector
 
+**An AI-powered tool that catches misleading charts before they mislead you.**
 
-<br/>
-
-<p align="center">
-  <strong>An intelligent, multi-layered system that exposes misleading data visualizations using<br/>Google Gemini Vision AI + a rule-based audit engine + LangChain explanation generation.</strong>
-</p>
-
-<br/>
-
-<!-- Badges -->
-<p align="center">
-  <img src="https://img.shields.io/badge/Python-3.11+-3776AB?style=for-the-badge&logo=python&logoColor=white" />
-  <img src="https://img.shields.io/badge/FastAPI-0.139-009688?style=for-the-badge&logo=fastapi&logoColor=white" />
-  <img src="https://img.shields.io/badge/React-19-61DAFB?style=for-the-badge&logo=react&logoColor=black" />
-  <img src="https://img.shields.io/badge/TypeScript-6.0-3178C6?style=for-the-badge&logo=typescript&logoColor=white" />
-  <img src="https://img.shields.io/badge/Vite-8.1-646CFF?style=for-the-badge&logo=vite&logoColor=white" />
-  <img src="https://img.shields.io/badge/Gemini_AI-Flash-4285F4?style=for-the-badge&logo=google&logoColor=white" />
-  <img src="https://img.shields.io/badge/LangChain-Enabled-1C3C3C?style=for-the-badge&logo=chainlink&logoColor=white" />
-  <img src="https://img.shields.io/badge/Docker-Ready-2496ED?style=for-the-badge&logo=docker&logoColor=white" />
-</p>
-
-<br/>
-
-<!-- Quick nav -->
-<p align="center">
-  <a href="#-overview">Overview</a> •
-  <a href="#-features">Features</a> •
-  <a href="#-architecture">Architecture</a> •
-  <a href="#-flowchart">Flowchart</a> •
-  <a href="#-violation-rules">Rules</a> •
-  <a href="#-tech-stack">Stack</a> •
-  <a href="#-getting-started">Setup</a> •
-  <a href="#-api-reference">API</a> •
-  <a href="#-project-structure">Structure</a>
-</p>
-
-<br/>
+Upload any chart image and get back a structured breakdown of exactly what's wrong with it — truncated axes, cherry-picked date ranges, 3D distortion, and more — along with a 0–100 deception score and a plain-English explanation of each problem.
 
 ---
 
-</div>
+## Why this exists
 
-## 🌟 Overview
+Misleading charts are everywhere — in news articles, corporate earnings calls, political ads. A bar chart with a Y-axis that starts at 80 instead of 0 can make a 2% change look like a 200% shift. Most people don't catch it, and that's exactly the point.
 
-**ChartLie Detector** is a full-stack AI application that automatically detects **deceptive, misleading, or statistically dishonest data visualizations**. Upload any chart image and within seconds get:
-
-- 🔍 A **structured audit** of 8 known chart deception patterns
-- 📊 A **weighted lie score** (0–100) with severity classification
-- 🤖 **AI-generated natural language explanations** via LangChain + Gemini
-- 📄 A **downloadable PDF report** for sharing or citation
-- 🗂️ **Full analysis history** with dashboard analytics
-
-> **Why does this matter?**  
-> Misleading charts are rampant in media, politics, and corporate reporting. A truncated Y-axis can make a 2% change look like a 200% change. This tool arms analysts, journalists, and everyday users with AI-powered fact-checking for visual data.
+ChartLie Detector automates the fact-checking. It runs your chart through Google Gemini Vision, a deterministic rule engine grounded in the ACL 2026 Misviz Benchmark, and a LangChain explanation pipeline — then tells you in plain language what's deceptive and why.
 
 ---
 
-## ✨ Features
+## What you get from each analysis
 
-<<<<<<< HEAD
-| Feature | Description |
+- A **lie score** from 0 to 100 with a severity label (Honest → Deceptive)
+- A list of every **violation detected**, with the specific rule it broke and how many points it cost
+- A **natural language report** explaining the deception mechanics and how the chart could be fixed
+- A **downloadable PDF** of the full audit trail
+- A **history dashboard** of all past analyses with aggregate stats
+
+---
+
+## The 8 deception patterns it checks
+
+These map directly to the Misviz benchmark taxonomy:
+
+| Pattern | What it catches |
 |---|---|
-| 🧠 **Gemini Vision AI** | Extracts structured chart metadata using Google's Gemini Flash Lite multimodal model |
-| 📋 **8-Rule Audit Engine** | Checks for truncated axes, dual axes, 3D distortion, wrong chart types & more |
-| ⚖️ **Weighted Lie Scoring** | Each violation carries a weighted penalty; produces a 0-100 deception score |
-| 🤖 **LangChain Explanations** | Generates human-readable, context-aware explanations of each violation |
-| 📄 **PDF Report Generator** | Full audit trail exported as a polished, printable PDF report |
-| 📂 **Analysis History** | Persistent history of all past analyses with search and filter |
-| 📊 **Interactive Dashboard** | Recharts-powered visualizations of your analysis activity |
-| ⚡ **Result Caching** | Cache layer prevents redundant AI calls for identical images |
-| 🐳 **Docker Ready** | Full `docker-compose.yml` for one-command deployment |
-| 🔌 **REST API** | Clean FastAPI endpoints, fully documented via auto-generated Swagger UI |
-=======
-The architecture and heuristics of ChartLieDetector are directly grounded in the **ACL 2026 Misviz Benchmark** established by **Tonglet et al.** 
+| **Truncated Y-axis** | Y-axis starts above zero, artificially amplifying small differences |
+| **Inverted axis** | Reversed scale direction makes growth look like decline (or vice versa) |
+| **Inconsistent scale intervals** | Non-uniform tick spacing distorts the slope of trends |
+| **Cherry-picked data range** | A narrow time slice selected to support one narrative while hiding the bigger picture |
+| **Misleading aspect ratio or area** | Stretched dimensions or radius-instead-of-area mapping skews proportional perception |
+| **Dual-axis manipulation** | Two independent Y-scales overlaid to imply a false correlation |
+| **Missing baseline** | No reference point makes it impossible to judge the scale of values |
+| **Selective time range** | Key periods (like seasonal corrections) excluded to force an artificial trend |
 
-Historically, automated chart auditing struggled due to the lack of standard datasets cataloging misleading behaviors. The Misviz benchmark addresses this by cataloging and formalizing visual manipulation strategies. ChartLieDetector translates these theoretical research definitions into a practical, production-grade application, establishing one of the first open implementations of the Misviz benchmark available.
+### Severity scale
 
----
-
-## 📊 The 8 Misleader Categories
-
-ChartLieDetector evaluates uploaded images against the eight primary deception methods detailed in the Misviz benchmark:
-
-| Icon | Category | Definition & Deceptive Impact |
-| :---: | :--- | :--- |
-| ✂️ | **Truncated Y-Axis** | The vertical scale starts at a non-zero value, artificially inflating minor differences between data points or bars. |
-| 🔄 | **Inverted Axis** | Reversing axis directions (e.g., zero at the top) to trick readers into seeing growth as a decline or vice-versa. |
-| 📐 | **Inconsistent Scale Intervals** | Axis tick intervals vary in value (e.g., non-logarithmic non-uniform increments), distorting slopes and trends. |
-| 🍒 | **Cherry-picked Data Range** | Isolating a narrow slice of a chart timeline to support a narrative while hiding structural trends. |
-| 🖼️ | **Misleading Aspect Ratio / Area** | Stretching or compressing chart dimensions, or mapping variables to circle radius instead of area to skew proportional sizes. |
-| ⚖️ | **Dual Axis Manipulation** | Overlaying two independent metrics on distinct Y-scales to imply false correlations or hide relative divergence. |
-| 📉 | **Missing Baseline** | Eliminating reference baselines entirely, preventing comparative assessment of scale and value heights. |
-| ⏳ | **Selective Time Range** | Selectively cutting periods (e.g., excluding seasonal corrections) to force artificial upward or downward lines. |
+| Score | Label |
+|---|---|
+| 0 | Completely Honest |
+| 1–30 | Slightly Misleading |
+| 31–60 | Misleading |
+| 61–80 | Very Misleading |
+| 81–100 | Deceptive |
 
 ---
 
-## ⚙️ How It Works
+## How the pipeline works
 
-ChartLieDetector processes images through a structured pipeline:
-
-1. **User Upload**: The user uploads a visualization image (PNG or JPG) to the modern React frontend dashboard.
-2. **Multimodal Extraction**: The backend routes the image to Google Gemini 2.5 Flash. Guided by structured system prompts, the model functions as a Vision-Language Model (VLM), extracting axis attributes, labels, source citations, coordinates, and scale intervals.
-3. **Pydantic Validation**: Extracted parameters are structured and validated against strict Pydantic schemas in the FastAPI backend.
-4. **Deterministic Auditing**: The validated payload enters the python-based rule engine. Pure evaluation functions execute checks mapping to the 8 Misviz benchmark violations.
-5. **Score Aggregation**: If rules are violated, preconfigured weights calculate a Lie Score on a deterministic 0–100 scale.
-6. **Report Generation**: Orchestrates the payload and passes the violations to Gemini to formulate a clear natural language verdict, explaining the exact deception mechanics and recommending visual fixes.
-7. **Dashboard Render**: The React frontend receives the JSON response, rendering interactive analytics and PDF report downloads.
->>>>>>> 774457b (feat: implement backend API architecture including VLM and explanation chains, and update frontend documentation to React)
+1. **Upload** — you drop a PNG, JPG, or WEBP chart image into the React dashboard.
+2. **Vision extraction** — Gemini 2.5 Flash reads the image and returns structured metadata: chart type, whether the Y-axis starts at zero, presence of dual axes, 3D effects, labels, source citations, and date range info. The output is validated against a Pydantic schema.
+3. **Rule audit** — a deterministic Python engine runs all 8 checks against that metadata. Each rule is a pure function that either returns a violation or returns nothing.
+4. **Scoring** — violations are summed by weight, capped at 100: `score = min(100, sum of violation weights)`.
+5. **AI report** — a LangChain chain feeds the violations and score into a Gemini prompt that writes a clear, specific explanation of what's wrong and how to fix it.
+6. **PDF export** — the full audit (metadata, violations, score, report) is compiled into a ReportLab PDF and saved to disk.
+7. **Response** — the frontend receives a JSON payload and renders the score ring, violation cards, and report text.
 
 ---
 
-## 🏗️ Architecture
-
-```mermaid
-<<<<<<< HEAD
-%%{init: {"theme": "base", "themeVariables": {"primaryColor": "#6366f1", "primaryTextColor": "#ffffff", "primaryBorderColor": "#4338ca", "lineColor": "#c4b5fd", "secondaryColor": "#1e1b4b", "tertiaryColor": "#0f0a2e", "edgeLabelBackground": "#312e81", "fontFamily": "monospace"}}}%%
-flowchart TB
-    classDef page     fill:#6366f1,stroke:#4338ca,color:#fff,font-weight:bold
-    classDef api      fill:#0ea5e9,stroke:#0284c7,color:#fff,font-weight:bold
-    classDef service  fill:#8b5cf6,stroke:#6d28d9,color:#fff
-    classDef gemini   fill:#f59e0b,stroke:#b45309,color:#000,font-weight:bold
-    classDef storage  fill:#10b981,stroke:#047857,color:#fff
-    classDef ext      fill:#ef4444,stroke:#b91c1c,color:#fff,font-weight:bold
-
-    subgraph FE["🌐  React 19  ·  Vite  ·  TypeScript  ·  TailwindCSS v4"]
-        direction LR
-        P1["🏠 Home\nUpload"]:::page
-        P2["📊 Dashboard\nAnalytics"]:::page
-        P3["🗂️ History"]:::page
-        P4["📄 Reports\nPDF View"]:::page
-        P5["⚙️ Settings"]:::page
-=======
-graph TD
-    User([User]) -->|Uploads Chart Image| ReactUI[React UI - Dark Theme]
-    ReactUI -->|POST /api/upload| FastAPI[FastAPI Backend Router]
-    
-    subgraph Execution Pipeline
-        FastAPI -->|Extract Image Payload| ImageValidator[Image Validator]
-        ImageValidator -->|Validated Image| GeminiVLM[Gemini 2.5 Flash VLM]
-        GeminiVLM -->|Structured Prompt Analysis| Metadata[Pydantic ChartMetadata Schema]
-        
-        Metadata -->|Parse Attributes| RuleEngine[Deterministic Rule Engine]
-        
-        subgraph Misviz Audit Rules
-            RuleEngine --> R1[Truncated Y-Axis]
-            RuleEngine --> R2[Inverted Axis]
-            RuleEngine --> R3[Inconsistent Scale]
-            RuleEngine --> R4[Cherry-picked Range]
-            RuleEngine --> R5[Aspect/Area Distortion]
-            RuleEngine --> R6[Dual Y-Axis]
-            RuleEngine --> R7[Missing Baseline]
-            RuleEngine --> R8[Selective Time Range]
-        end
-        
-        R1 & R2 & R3 & R4 & R5 & R6 & R7 & R8 -->|Flagged Violations| ScoreEngine[Weighted Scoring Engine]
-        ScoreEngine -->|Sum Penalties min=0, max=100| FinalScore[Lie Score & Severity Bands]
->>>>>>> 774457b (feat: implement backend API architecture including VLM and explanation chains, and update frontend documentation to React)
-    end
-
-    RT["🔀 FastAPI Router\nPOST /api/upload"]:::api
-
-    subgraph PIPE["⚙️  Analysis Pipeline  —  backend/app/services/"]
-        direction LR
-        S1["🤖 VLM Service\nGemini Vision"]:::gemini
-        S2["📋 Rule Engine\n8 Audit Rules"]:::service
-        S3["⚖️ Score Engine\n0 – 100"]:::service
-        S4["✨ AI Report\nGemini Flash"]:::gemini
-        S5["📄 PDF Generator\nReportLab"]:::service
-        S1 --> S2 --> S3 --> S4 --> S5
-    end
-
-    UP["📁 File Storage\nUploads"]:::storage
-    CA["💾 Cache\nIn-Memory"]:::storage
-
-    GM["✨ Google Gemini API\nFlash Lite  ·  Vision + Text"]:::ext
-
-    FE        -->|"🔗 HTTP REST / Axios"| RT
-    RT        -->|"analyze_image"| PIPE
-    RT        -->|"save file"| UP
-    RT        -->|"hash lookup"| CA
-    S1        -->|"🖼️ Vision Analysis"| GM
-    S4        -->|"📝 Text Generation"| GM
-```
-
----
-
-## 🔄 Analysis Pipeline Flowchart
-
-```mermaid
-%%{init: {"theme": "base", "themeVariables": {"primaryColor": "#6366f1", "primaryTextColor": "#ffffff", "primaryBorderColor": "#4338ca", "lineColor": "#c4b5fd", "secondaryColor": "#1e1b4b", "tertiaryColor": "#0f0a2e", "edgeLabelBackground": "#312e81", "fontFamily": "monospace", "fontSize": "14px"}}}%%
-flowchart TD
-    classDef input    fill:#6366f1,stroke:#4338ca,color:#fff,font-weight:bold
-    classDef validate fill:#0ea5e9,stroke:#0284c7,color:#fff,font-weight:bold
-    classDef cache    fill:#14b8a6,stroke:#0d9488,color:#fff,font-weight:bold
-    classDef gemini   fill:#f59e0b,stroke:#b45309,color:#000,font-weight:bold
-    classDef rule     fill:#8b5cf6,stroke:#6d28d9,color:#fff
-    classDef score    fill:#ec4899,stroke:#be185d,color:#fff,font-weight:bold
-    classDef pdf      fill:#10b981,stroke:#047857,color:#fff,font-weight:bold
-    classDef output   fill:#22c55e,stroke:#15803d,color:#fff,font-weight:bold
-    classDef reject   fill:#ef4444,stroke:#b91c1c,color:#fff,font-weight:bold
-    classDef hit      fill:#06b6d4,stroke:#0e7490,color:#fff,font-weight:bold
-
-    A(["📤 User Uploads Chart\nPNG · JPG · WEBP"]):::input
-    B["🔍 Image Validation\nformat · size · MIME type"]:::validate
-    ERR(["🚫 400 Error — Rejected"]):::reject
-    C["💾 Cache Check\nHash-based lookup"]:::cache
-    HIT(["⚡ Cached Result\nInstant Response"]):::hit
-
-    D["🤖 STEP 1 — Gemini Vision\nAnalyzes chart image\nchart_type · has_source\ny_axis_starts_at_zero\nhas_3d_effects · has_dual_axes"]:::gemini
-
-    R1["✂️ Truncated Y-axis\n30 pts"]:::rule
-    R2["📊 Dual Y-axis\n25 pts"]:::rule
-    R3["📅 Cherry-picked Date\n20 pts"]:::rule
-    R4["📉 Wrong Chart Type\n20 pts"]:::rule
-    R5["🎲 3D Distortion\n15 pts"]:::rule
-    R6["📐 Inconsistent Scale\n15 pts"]:::rule
-    R7["🏷️ Missing Labels\n10 pts"]:::rule
-    R8["🔗 Missing Source\n10 pts"]:::rule
-
-    F["⚖️ STEP 3 — Score Engine\nWeighted penalty sum  →  0 to 100\n🟢 0 · Honest  🟡 1–30 · Slightly Misleading\n🟠 31–60 · Misleading  🔴 61–80 · Very Misleading  💀 81+ · Deceptive"]:::score
-    G["✨ STEP 4 — Gemini AI Report\nNatural language explanation\nof every detected violation"]:::gemini
-    H["📄 STEP 5 — PDF Report\nReportLab · Full audit trail\nDownloadable PDF"]:::pdf
-    I(["✅ JSON Response\nchart_info · violations · analysis\nreport · pdf_path"]):::output
-
-    A --> B
-    B -->|"❌ Invalid"| ERR
-    B -->|"✅ Valid"| C
-    C -->|"🎯 Cache Hit"| HIT
-    C -->|"❄️ Cache Miss"| D
-
-    D --> R1 & R2 & R3 & R4 & R5 & R6 & R7 & R8
-
-    R1 & R2 & R3 & R4 & R5 & R6 & R7 & R8 --> F
-
-    F --> G
-    G -->|"Gemini Flash"| H
-    H --> I
-```
-
----
-
-## 🛡️ Violation Rules
-
-The rule engine checks **8 well-documented deception patterns**:
-
-| # | Rule | Weight | Description |
-|---|------|--------|-------------|
-| 1 | **Truncated Y-axis** | 30 pts | Y-axis doesn't start at zero, exaggerating differences |
-| 2 | **Dual Y-axis** | 25 pts | Two Y-axes create misleading correlations |
-| 3 | **Cherry-picked Date Range** | 20 pts | Selective time windows hide broader trends |
-| 4 | **Wrong Chart Type** | 20 pts | Inappropriate chart type distorts perception |
-| 5 | **3D Distortion** | 15 pts | 3D effects alter perceived proportions |
-| 6 | **Inconsistent Scale** | 15 pts | Non-uniform intervals mislead magnitude |
-| 7 | **Missing Labels** | 10 pts | Absent axis labels or data point labels |
-| 8 | **Missing Source** | 10 pts | No data source cited — unverifiable claims |
-
-### 📊 Severity Scale
-
-```
-Score   0       Completely Honest     ████░░░░░░  0%
-Score  1–30     Slightly Misleading   ████▓░░░░░  low
-Score 31–60     Misleading            ████████░░  moderate
-Score 61–80     Very Misleading       █████████░  high
-Score  81+      Deceptive / Lying     ██████████  critical
-```
-
----
-
-## 🧰 Tech Stack
+## Tech stack
 
 ### Backend
-| Technology | Version | Purpose |
-|---|---|---|
-| **Python** | 3.11+ | Core language |
-| **FastAPI** | 0.139 | REST API framework |
-| **Uvicorn** | 0.50 | ASGI web server |
-| **Google GenAI SDK** | latest | Gemini Vision + LangChain |
-| **Pydantic** | 2.x | Data validation & serialization |
-| **Pillow** | 12.x | Image processing & validation |
-| **python-multipart** | 0.0.32 | File upload handling |
-| **python-dotenv** | 1.2 | Environment variable management |
+
+| | |
+|---|---|
+| Python 3.11+ | Core language |
+| FastAPI 0.139 | REST API |
+| Uvicorn 0.50 | ASGI server |
+| Google GenAI SDK | Gemini Vision + text generation |
+| Pydantic 2.x | Schema validation |
+| Pillow 12.x | Image processing |
+| ReportLab | PDF generation |
+| python-dotenv | Environment config |
 
 ### Frontend
-| Technology | Version | Purpose |
-|---|---|---|
-| **React** | 19 | UI framework |
-| **TypeScript** | 6.0 | Type safety |
-| **Vite** | 8.1 | Build tool & dev server |
-| **TailwindCSS** | 4.x | Utility-first styling |
-| **Framer Motion** | 12.x | Animations |
-| **TanStack Query** | 5.x | Server state management |
-| **React Router** | 7.x | Client-side routing |
-| **Recharts** | 3.x | Dashboard data visualization |
-| **Lucide React** | latest | Icon library |
-| **Axios** | 1.x | HTTP client |
+
+| | |
+|---|---|
+| React 19 + TypeScript 6.0 | UI framework |
+| Vite 8.1 | Build tool |
+| TailwindCSS 4.x | Styling |
+| TanStack Query 5.x | Server state |
+| Recharts 3.x | Dashboard charts |
+| Framer Motion 12.x | Animations |
+| Axios 1.x | HTTP client |
 
 ---
 
-## 🚀 Getting Started
+## Getting started
 
 ### Prerequisites
 
 - Python 3.11+
 - Node.js 18+
-- A [Google Gemini API Key](https://aistudio.google.com/app/apikey)
+- A Google Gemini API key (get one at aistudio.google.com)
 
-### 1. Clone the Repository
+### Backend
 
 ```bash
+# Clone the repo
 git clone https://github.com/your-username/ChartLie_Detector.git
 cd ChartLie_Detector
-```
 
-### 2. Backend Setup
-
-```bash
-# Create and activate virtual environment
+# Create and activate a virtual environment
 python -m venv venv
-
-# Windows
-venv\Scripts\activate
-# macOS / Linux
-source venv/bin/activate
+source venv/bin/activate        # macOS/Linux
+venv\Scripts\activate           # Windows
 
 # Install dependencies
 pip install -r requirements.txt
 
-# Configure environment
+# Add your API key
 cp backend/.env.example backend/.env
-# Edit backend/.env and set your GEMINI_API_KEY
-```
+# Open backend/.env and set GEMINI_API_KEY=your_key_here
 
-```env
-# backend/.env
-GEMINI_API_KEY=your_google_gemini_api_key_here
-```
-
-```bash
-# Start the backend
+# Start the server
 cd backend
 uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 ```
 
-The API will be live at: **http://localhost:8000**  
-Swagger Docs: **http://localhost:8000/docs**
+API runs at http://localhost:8000 — Swagger docs at http://localhost:8000/docs.
 
-### 3. Frontend Setup
+### Frontend
 
 ```bash
 cd frontend
-
-# Install dependencies
 npm install
-
-# Start dev server
 npm run dev
 ```
 
-The app will be live at: **http://localhost:5173**
+App runs at http://localhost:5173.
 
-### 4. Docker (One-Command Setup)
+### Docker (one command)
 
 ```bash
-# From project root
 docker-compose up --build
 ```
 
 ---
 
-## 📡 API Reference
+## API reference
 
-### `POST /api/upload`
+### POST /api/upload
+
 Upload a chart image for analysis.
 
-**Request:** `multipart/form-data`
+**Request:** multipart/form-data
+
 | Field | Type | Description |
 |---|---|---|
-| `file` | `File` | Chart image (PNG, JPG, WEBP) |
+| `file` | File | PNG, JPG, or WEBP chart image |
 
-**Response:** `200 OK`
+**Response:** 200 OK
+
 ```json
 {
   "chart_info": {
@@ -392,7 +171,7 @@ Upload a chart image for analysis.
     {
       "rule": "Truncated Y-axis",
       "severity": "high",
-      "description": "Y-axis begins at 80 instead of 0..."
+      "description": "Y-axis begins at 80 instead of 0, which exaggerates the difference between bars."
     }
   ],
   "analysis": {
@@ -405,172 +184,93 @@ Upload a chart image for analysis.
 }
 ```
 
-**Error Responses:**
+**Error codes**
 
 | Code | Meaning |
 |---|---|
-| `400` | Invalid file format or corrupted image |
-| `422` | Validation error |
-| `500` | Internal server error (Gemini API failure) |
+| 400 | Invalid file format or corrupted image |
+| 422 | Validation error |
+| 500 | Internal server error (usually a Gemini API issue) |
 
 ---
 
-## 📁 Project Structure
+## Project structure
 
 ```
 ChartLie_Detector/
-├── 📄 README.md                    ← You are here
-├── 📄 .gitignore                   ← Comprehensive ignore rules
-├── 📄 docker-compose.yml           ← Docker orchestration
-├── 📄 requirements.txt             ← Root Python deps
+├── docker-compose.yml
+├── requirements.txt
 │
-├── 🖥️  backend/
-│   ├── 📄 .env                     ← Secrets (gitignored)
-│   ├── 📄 requirements.txt
-│   ├── 📄 download_misviz.py       ← Dataset downloader
-│   ├── 📁 uploads/                 ← Uploaded chart images (gitignored)
-│   ├── 📁 reports/                 ← Generated PDFs (gitignored)
-│   ├── 📁 datasets/                ← Training data (gitignored)
-│   ├── 📁 tests/                   ← Backend unit tests
-│   └── 📁 app/
-│       ├── 📄 main.py              ← FastAPI app entry point
-│       ├── 📄 __init__.py
-│       ├── 📁 api/
-│       │   ├── 📄 router.py        ← Route aggregator
-│       │   └── 📁 routes/
-│       │       └── 📄 upload.py    ← Upload endpoint
-│       ├── 📁 core/
-│       │   ├── 📄 config.py        ← App configuration
-│       │   └── 📄 logging.py       ← Logger setup
-│       ├── 📁 services/
-│       │   ├── 📄 analysis_service.py  ← Main pipeline orchestrator
-│       │   ├── 📄 vlm_service.py       ← Gemini Vision integration
-│       │   ├── 📄 gemini_service.py    ← Gemini client
-│       │   ├── 📄 image_validator.py   ← Input validation
-│       │   ├── 📄 report_service.py    ← PDF generation
-│       │   └── 📄 cache_service.py     ← Result caching
-│       ├── 📁 models/
-│       │   └── 📄 chart_info.py    ← Pydantic ChartInfo schema
-│       ├── 📁 rules/
-│       │   ├── 📄 rule_engine.py       ← Rule orchestrator
-│       │   ├── 📄 truncated_axis.py    ← Rule: Truncated Y-axis
-│       │   ├── 📄 dual_axis.py         ← Rule: Dual Y-axis
-│       │   ├── 📄 missing_baseline.py  ← Rule: Missing baseline
-│       │   ├── 📄 missing_labels.py    ← Rule: Missing labels
-│       │   ├── 📄 missing_source.py    ← Rule: Missing source
-│       │   ├── 📄 inconsistent_scale.py← Rule: Inconsistent scale
-│       │   ├── 📄 three_d.py           ← Rule: 3D distortion
-│       │   └── 📄 wrong_chart_type.py  ← Rule: Wrong chart type
-│       ├── 📁 scoring/
-│       │   ├── 📄 score_engine.py  ← Violation → score calculator
-│       │   └── 📄 weights.py       ← Rule weight configuration
-│       ├── 📁 langchain/
-│       │   ├── 📄 explanation_chain.py ← LangChain report chain
-│       │   └── 📄 prompt_template.py   ← Prompt templates
-│       ├── 📁 prompts/
-│       │   └── 📄 vision_prompt.py ← Gemini Vision prompt
-│       ├── 📁 output/              ← Temp AI outputs (gitignored)
-│       └── 📁 utils/               ← Shared utilities
+├── backend/
+│   ├── .env                        ← Your API key goes here (gitignored)
+│   ├── requirements.txt
+│   ├── uploads/                    ← Uploaded images (gitignored)
+│   ├── reports/                    ← Generated PDFs (gitignored)
+│   └── app/
+│       ├── main.py                 ← FastAPI entry point
+│       ├── api/routes/
+│       │   └── upload.py           ← Upload endpoint
+│       ├── core/
+│       │   ├── config.py
+│       │   └── logging.py
+│       ├── services/
+│       │   ├── analysis_service.py ← Pipeline orchestrator
+│       │   ├── vlm_service.py      ← Gemini Vision integration
+│       │   ├── gemini_service.py
+│       │   ├── image_validator.py
+│       │   ├── report_service.py   ← PDF generation
+│       │   └── cache_service.py    ← In-memory result cache
+│       ├── models/
+│       │   └── chart_info.py       ← Pydantic schema
+│       ├── rules/
+│       │   ├── rule_engine.py      ← Rule orchestrator
+│       │   ├── truncated_axis.py
+│       │   ├── dual_axis.py
+│       │   ├── missing_baseline.py
+│       │   ├── missing_labels.py
+│       │   ├── missing_source.py
+│       │   ├── inconsistent_scale.py
+│       │   ├── three_d.py
+│       │   └── wrong_chart_type.py
+│       ├── scoring/
+│       │   ├── score_engine.py
+│       │   └── weights.py
+│       └── langchain/
+│           ├── explanation_chain.py
+│           └── prompt_template.py
 │
-└── 🌐 frontend/
-    ├── 📄 index.html               ← App entry HTML
-    ├── 📄 package.json
-    ├── 📄 vite.config.ts
-    ├── 📄 tsconfig.json
-    ├── 📁 public/                  ← Static assets
-    └── 📁 src/
-        ├── 📄 main.tsx             ← React entry point
-        ├── 📄 App.tsx              ← Router + routes
-        ├── 📄 App.css
-        ├── 📄 index.css            ← Global styles + Tailwind
-        ├── 📁 pages/
-        │   ├── 📄 Home.tsx         ← Upload interface
-        │   ├── 📄 Dashboard.tsx    ← Analytics overview
-        │   ├── 📄 History.tsx      ← Past analyses
-        │   ├── 📄 Reports.tsx      ← PDF report viewer
-        │   ├── 📄 Settings.tsx     ← App settings
-        │   └── 📄 NotFound.tsx     ← 404 page
-        ├── 📁 components/
-        │   ├── 📁 layout/          ← Navbar, Sidebar, Footer
-        │   ├── 📁 upload/          ← Upload dropzone component
-        │   ├── 📁 dashboard/       ← Dashboard widgets
-        │   ├── 📁 history/         ← History table components
-        │   ├── 📁 report/          ← Report display components
-        │   ├── 📁 charts/          ← Recharts wrappers
-        │   ├── 📁 common/          ← Shared UI components
-        │   └── 📁 home/            ← Home page components
-        ├── 📁 services/            ← Axios API calls
-        ├── 📁 hooks/               ← Custom React hooks
-        ├── 📁 types/               ← TypeScript type definitions
-        └── 📁 utils/               ← Frontend utilities
+└── frontend/
+    └── src/
+        ├── pages/
+        │   ├── Home.tsx            ← Upload interface
+        │   ├── Dashboard.tsx       ← Analytics overview
+        │   ├── History.tsx         ← Past analyses
+        │   └── Reports.tsx         ← PDF viewer
+        ├── components/
+        │   ├── layout/
+        │   ├── upload/
+        │   ├── dashboard/
+        │   └── charts/
+        └── services/               ← Axios API calls
 ```
 
 ---
 
-## 🔬 How It Works — Deep Dive
+## Adding a new rule
 
-### Step 1: Vision Language Model (VLM) Extraction
-The uploaded chart image is sent to **Google Gemini Flash Lite** with a structured system prompt. The model returns a `ChartInfo` JSON object (validated by Pydantic) containing:
-- Chart type (bar, line, pie, scatter, etc.)
-- Whether the Y-axis starts at zero
-- Presence of dual axes, 3D effects, labels, source citations
-- Date range information, scale consistency
-
-### Step 2: Rule-Based Audit
-A deterministic rule engine runs **8 checks in sequence** against the extracted metadata. Each rule is a pure function that returns either `None` (no violation) or a violation dictionary `{ rule, severity, description, weight }`.
-
-### Step 3: Weighted Scoring
-Violations are aggregated: `score = min(100, sum(violation.weight for violation in violations))`. Severity bands classify the result into 5 categories.
-
-### Step 4: AI Explanation Chain
-A LangChain pipeline feeds the score, severity, and violation list into a Gemini prompt template that generates a polished, readable analysis report in natural language.
-
-### Step 5: PDF Report
-The full analysis — chart metadata, violations, score, and AI report — is compiled into a professionally formatted PDF using ReportLab and saved to disk.
-
----
-
-## 🤝 Contributing
-
-```bash
-# Fork the repo, create a feature branch
-git checkout -b feature/new-rule-cherry-picking
-
-# Make your changes, run tests
-cd backend && python -m pytest tests/
-
-# Lint frontend
-cd frontend && npm run lint
-
-# Submit a Pull Request!
-```
-
-### Adding a New Rule
 1. Create `backend/app/rules/your_rule.py`
-2. Define `def check_your_rule(chart_info: Dict) -> Optional[Dict]`
-3. Add it to `rule_engine.py`'s rules list
+2. Define `def check_your_rule(chart_info: Dict) -> Optional[Dict]` — return a violation dict or `None`
+3. Register it in `rules/rule_engine.py`
 4. Add its weight to `scoring/weights.py`
 
 ---
 
-## 📜 License
+## Academic grounding
 
-This project is licensed under the **MIT License** — see [LICENSE](./LICENSE) for details.
+The eight deception categories and their definitions are drawn from the **Misviz Benchmark** (Tonglet et al., ACL 2026), which provides the first standardized taxonomy of misleading visualization behaviors. ChartLie Detector is one of the first open implementations that translates this benchmark into a production-grade application.
 
 ---
 
-## 👤 Author
+## License
 
-Built with 🤖 + ❤️ for data integrity and visual truth.
-
-<div align="center">
-
-<br/>
-
-> *"The greatest deceptions are the ones that hide in plain sight — on a graph."*
-
-<br/>
-
-⭐ **Star this repo if you believe in honest data visualization!** ⭐
-
-</div>
+MIT — see LICENSE for details.
