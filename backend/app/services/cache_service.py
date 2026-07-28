@@ -2,14 +2,11 @@ import json
 from pathlib import Path
 from app.core.logging import logger
 
-# Cache file stored in the uploads directory: backend/uploads/cache.json
 BACKEND_DIR = Path(__file__).resolve().parents[2]
 CACHE_FILE = BACKEND_DIR / "uploads" / "cache.json"
 
 def get_cached_result(image_hash: str) -> dict | None:
-    """
-    Retrieve cached analysis results if they exist.
-    """
+    """Returns cached analysis results if available."""
     if not CACHE_FILE.exists():
         return None
     try:
@@ -21,9 +18,7 @@ def get_cached_result(image_hash: str) -> dict | None:
         return None
 
 def set_cached_result(image_hash: str, result: dict) -> None:
-    """
-    Save analysis results to the cache.
-    """
+    """Saves analysis results to local JSON cache."""
     cache = {}
     if CACHE_FILE.exists():
         try:

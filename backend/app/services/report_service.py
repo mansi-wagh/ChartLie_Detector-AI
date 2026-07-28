@@ -1,8 +1,4 @@
-"""
-Report service — builds a PDF report from the analysis results.
-
-No API calls — pure local PDF generation via ReportLab.
-"""
+"""Generates downloadable PDF audit reports using ReportLab."""
 
 from pathlib import Path
 
@@ -11,7 +7,6 @@ from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.lib import colors
 from reportlab.lib.pagesizes import A4
 
-# Absolute path anchored to this file's location: backend/reports/
 BACKEND_DIR = Path(__file__).resolve().parents[2]
 REPORT_DIR  = BACKEND_DIR / "reports"
 REPORT_DIR.mkdir(parents=True, exist_ok=True)
@@ -24,22 +19,16 @@ def generate_pdf_report(
     violations: list,
     report: str
 ) -> str:
-    """
-    Build a PDF report and save it to the reports/ directory.
-
-    Returns:
-        Absolute path to the generated PDF file.
-    """
+    """Builds a styled PDF report and saves it to the reports directory."""
     pdf_path = REPORT_DIR / f"{filename}.pdf"
     doc      = SimpleDocTemplate(str(pdf_path), pagesize=A4)
     styles   = getSampleStyleSheet()
     story    = []
 
-    # Title
+    # Title & verdict header
     story.append(Paragraph("<b>ChartLieDetector — Audit Report</b>", styles["Title"]))
     story.append(Spacer(1, 12))
 
-    # Score & Severity (key verdict at the top)
     score = analysis['score']
     severity = analysis['severity']
     story.append(Paragraph(
@@ -48,7 +37,7 @@ def generate_pdf_report(
     ))
     story.append(Spacer(1, 12))
 
-    # Key chart info only (not every field)
+    # Summary table
     key_fields = ["chart_type", "title", "y_axis_start", "y_axis_end"]
     info_data = [["Property", "Value"]]
     for key in key_fields:
@@ -69,7 +58,7 @@ def generate_pdf_report(
         story.append(info_table)
         story.append(Spacer(1, 12))
 
-    # Violations
+    # Violations table
     story.append(Paragraph("<b>Detected Violations</b>", styles["Heading3"]))
     if not violations:
         story.append(Paragraph("No misleading patterns detected. ✓", styles["BodyText"]))
@@ -95,11 +84,9 @@ def generate_pdf_report(
         story.append(viol_table)
     story.append(Spacer(1, 12))
 
-    # AI Explanation (concise)
+    # AI summary text formatting
     story.append(Paragraph("<b>AI Analysis</b>", styles["Heading3"]))
-    # Clean up markdown bold markers for PDF
     clean_report = report.replace("**", "<b>").replace("\n", "<br/>")
-    # Fix unclosed bold tags (pairs of <b>)
     import re
     clean_report = re.sub(r'<b>(.*?)<b>', r'<b>\1</b>', clean_report)
     story.append(Paragraph(clean_report, styles["BodyText"]))

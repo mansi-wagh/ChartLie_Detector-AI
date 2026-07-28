@@ -1,5 +1,3 @@
-# Simple string template — no external dependencies needed.
-
 AUDIT_TEMPLATE = """
 You are a data visualization auditor. Be concise.
 
@@ -20,7 +18,7 @@ Do NOT use markdown headers. Keep total response under 150 words.
 
 
 class _SimplePrompt:
-    """Minimal prompt template — replaces langchain_core dependency."""
+    """Formats string templates with named parameters."""
 
     def __init__(self, template: str):
         self._template = template

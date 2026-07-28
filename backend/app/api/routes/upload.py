@@ -1,8 +1,4 @@
-"""
-Upload route — accepts a chart image, saves it, and runs the full analysis pipeline.
-
-API usage: delegates 2 Gemini calls via analysis_service (see analysis_service.py).
-"""
+"""Upload route handling file validation, caching, and chart analysis."""
 
 from pathlib import Path
 
@@ -15,7 +11,6 @@ from app.core.logging import logger
 
 router = APIRouter()
 
-# Absolute upload directory — anchored to this file's location: backend/uploads/
 BACKEND_DIR = Path(__file__).resolve().parents[3]
 UPLOAD_DIR  = BACKEND_DIR / "uploads"
 UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
@@ -28,18 +23,14 @@ async def upload_chart(file: UploadFile = File(...), x_gemini_key: str | None = 
 
     logger.info(f"[Upload] Received file: {file.filename}")
 
-    # 1. Validate image (content-type, size, integrity)
     await validate_image(file)
 
-    # 2. Read bytes (validate_image resets the stream pointer)
     image_bytes = await file.read()
     if not image_bytes:
         raise HTTPException(status_code=400, detail="Uploaded file is empty.")
 
-    # 3. Generate content hash
     image_hash = generate_image_hash(image_bytes)
 
-    # 4. Save to disk
     save_path = UPLOAD_DIR / file.filename
     try:
         save_path.write_bytes(image_bytes)
@@ -52,7 +43,6 @@ async def upload_chart(file: UploadFile = File(...), x_gemini_key: str | None = 
     if not save_path.exists():
         raise HTTPException(status_code=500, detail="File was not confirmed on disk after write.")
 
-    # 4b. Check cache for previous analysis
     from app.services.cache_service import get_cached_result, set_cached_result
     cached_result = get_cached_result(image_hash)
     if cached_result is not None:
@@ -65,7 +55,6 @@ async def upload_chart(file: UploadFile = File(...), x_gemini_key: str | None = 
             **cached_result
         }
 
-    # 5. Run analysis pipeline (2 Gemini API calls)
     try:
         result = analyze_image(
             image_path=str(save_path),
@@ -73,7 +62,6 @@ async def upload_chart(file: UploadFile = File(...), x_gemini_key: str | None = 
             filename=file.filename.rsplit(".", 1)[0],
             api_key=x_gemini_key
         )
-        # Store in cache
         set_cached_result(image_hash, result)
     except FileNotFoundError as exc:
         logger.error(f"[Upload] FileNotFoundError during analysis: {exc}")

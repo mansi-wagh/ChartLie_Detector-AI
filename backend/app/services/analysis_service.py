@@ -1,11 +1,4 @@
-"""
-Analysis service — orchestrates the full chart analysis pipeline.
-
-API usage per upload:
-  Step 1 — Gemini Vision  (1 API call  → vlm_service)
-  Step 4 — Gemini Report  (1 API call  → explanation_chain)
-  Total   — 2 Gemini calls per upload
-"""
+"""Orchestrates chart analysis across vision extraction, rule checking, scoring, and PDF export."""
 
 from app.services.vlm_service import analyze_chart
 from app.rules.rule_engine import analyze_rules
@@ -16,34 +9,22 @@ from app.core.logging import logger
 
 
 def analyze_image(image_path: str, mime_type: str, filename: str, api_key: str | None = None) -> dict:
-    """
-    Run the full analysis pipeline on an uploaded chart image.
-
-    Args:
-        image_path: Absolute path to the saved image file.
-        mime_type:  MIME type, e.g. "image/png".
-        filename:   Base filename (no extension) used for the PDF report name.
-
-    Returns:
-        Dict with chart_info, violations, analysis, report, and pdf_report.
-    """
+    """Runs the chart analysis pipeline from image parsing to final PDF report."""
     logger.info(f"[Analysis] Starting pipeline for: {image_path}")
 
-    # Step 1: Gemini Vision — extract structured chart metadata (1 API call)
+    # Extract chart metadata using Gemini Vision
     chart_info = analyze_chart(image_path, mime_type, api_key=api_key)
 
-    # Step 2: Rule Engine — detect misleading patterns (no API call)
+    # Run rule engine checks and calculate severity score
     violations = analyze_rules(chart_info)
     logger.info(f"[Analysis] Violations detected: {len(violations)}")
 
-    # Step 3: Scoring — calculate misleading score (no API call)
     analysis = calculate_score(violations)
     logger.info(f"[Analysis] Score: {analysis['score']} | Severity: {analysis['severity']}")
 
-    # Step 4: Gemini Report — generate plain-English explanation (1 API call)
+    # Generate plain-text report and generate PDF summary
     report = generate_report(analysis["score"], analysis["severity"], violations, api_key=api_key)
 
-    # Step 5: PDF — build downloadable report (no API call)
     pdf_path = generate_pdf_report(
         filename=filename,
         chart_info=chart_info,

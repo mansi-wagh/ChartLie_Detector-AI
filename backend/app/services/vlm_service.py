@@ -1,9 +1,4 @@
-"""
-VLM service — sends chart images to Gemini for structured analysis.
-
-API usage: 1 Gemini call per upload.
-Model is configured via GEMINI_MODEL in .env (default: gemini-3.5-flash-lite).
-"""
+"""Parses chart images into structured metadata using Gemini Vision."""
 
 import json
 from pathlib import Path
@@ -18,20 +13,7 @@ from app.prompts.vision_prompt import VISION_PROMPT
 
 
 def analyze_chart(image_path: str, mime_type: str, api_key: str | None = None) -> dict:
-    """
-    Read the chart image and send it to Gemini for structured analysis.
-
-    Args:
-        image_path: Absolute path to the saved image file.
-        mime_type:  MIME type, e.g. "image/png".
-
-    Returns:
-        Dict matching ChartInfo schema.
-
-    Raises:
-        FileNotFoundError: Image does not exist at the given path.
-        RuntimeError:      Gemini API error (rate limit, auth, parse failure).
-    """
+    """Reads a chart image and sends it to Gemini for structured extraction."""
     abs_path = Path(image_path).resolve()
 
     logger.info(f"[VLMService] image path : {abs_path}")
@@ -77,7 +59,7 @@ def analyze_chart(image_path: str, mime_type: str, api_key: str | None = None) -
             raise RuntimeError(f"Gemini quota exceeded. Retry later: {exc}") from exc
         raise RuntimeError(f"Gemini API error: {exc}") from exc
 
-    # Prefer structured parsed output; fall back to raw text parsing
+    # Fall back to raw JSON parsing if necessary
     if response.parsed is not None:
         logger.info("[VLMService] Structured response parsed successfully")
         return response.parsed.model_dump()

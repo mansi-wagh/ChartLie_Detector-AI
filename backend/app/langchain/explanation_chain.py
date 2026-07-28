@@ -1,9 +1,4 @@
-"""
-Explanation chain — generates a plain-English audit report via Gemini.
-
-API usage: 1 Gemini call per upload.
-Model is configured via GEMINI_MODEL in .env (default: gemini-3.5-flash-lite).
-"""
+"""Generates plain-English chart audit explanations using Gemini."""
 
 from google.genai import types
 
@@ -13,17 +8,7 @@ from app.langchain.prompt_template import audit_prompt
 
 
 def generate_report(score: int, severity: str, violations: list, api_key: str | None = None) -> str:
-    """
-    Generate a human-readable audit explanation for the detected violations.
-
-    Args:
-        score:      Misleading score (0–100).
-        severity:   Severity label (HONEST / SUSPICIOUS / MISLEADING / DECEPTIVE).
-        violations: List of violation dicts from the rule engine.
-
-    Returns:
-        Plain-text explanation string from Gemini.
-    """
+    """Summarizes chart violations into a concise explanation."""
     prompt = audit_prompt.format(
         score=score,
         severity=severity,

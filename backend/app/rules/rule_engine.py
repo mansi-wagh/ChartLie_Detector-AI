@@ -10,15 +10,7 @@ from app.scoring.weights import RULE_WEIGHTS
 
 
 def analyze_rules(chart_info: Dict[str, Any]) -> List[Dict[str, Any]]:
-    """
-    Runs all rule audits on the extracted chart_info metadata.
-
-    Args:
-        chart_info: Extracted chart attributes.
-
-    Returns:
-        List of violation dictionaries detected by the rules, enriched with configured weights.
-    """
+    """Runs all rule checks against extracted chart metadata and attaches severity weights."""
     violations = []
 
     rules = [
@@ -36,7 +28,6 @@ def analyze_rules(chart_info: Dict[str, Any]) -> List[Dict[str, Any]]:
 
         if result is not None:
             rule_name = result.get("rule")
-            # Dynamically attach weight from RULE_WEIGHTS (default to 10 if not found)
             result["weight"] = RULE_WEIGHTS.get(rule_name, 10)
             violations.append(result)
 

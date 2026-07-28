@@ -1,7 +1,7 @@
 import sys
 from pathlib import Path
 
-# Ensure backend directory is in sys.path so 'app' imports work from any working directory
+# Ensure backend path is available for imports
 BACKEND_DIR = Path(__file__).resolve().parent.parent
 if str(BACKEND_DIR) not in sys.path:
     sys.path.insert(0, str(BACKEND_DIR))
@@ -15,7 +15,7 @@ from app.api.router import router
 
 app = FastAPI(title="ChartLieDetector API")
 
-# Add CORS Middleware for frontend & API clients
+# Enable CORS for local dev and frontend access
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -24,19 +24,18 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Directories
 BACKEND_DIR = Path(__file__).resolve().parent.parent
 REPORT_DIR  = BACKEND_DIR / "reports"
 UPLOAD_DIR  = BACKEND_DIR / "uploads"
 REPORT_DIR.mkdir(parents=True, exist_ok=True)
 UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
 
-# Mount static file endpoints for PDF reports & uploads
+# Mount static asset directories
 app.mount("/api/reports", StaticFiles(directory=REPORT_DIR), name="api_reports")
 app.mount("/reports", StaticFiles(directory=REPORT_DIR), name="reports")
 app.mount("/uploads", StaticFiles(directory=UPLOAD_DIR), name="uploads")
 
-# Include API routes (both under /api and root for backwards compatibility)
+# Register API routes
 app.include_router(router, prefix="/api")
 app.include_router(router)
 
@@ -46,10 +45,9 @@ def health_check():
     return {"status": "ok", "message": "ChartLieDetector API is operational"}
 
 
-# Frontend SPA static serving (for single-container Hugging Face Spaces deployment)
+# Serve frontend SPA assets when available
 FRONTEND_DIST = Path(__file__).resolve().parents[2] / "frontend_dist"
 if not FRONTEND_DIST.exists():
-    # Fallback to frontend/dist in local environment
     FRONTEND_DIST = Path(__file__).resolve().parents[2] / "frontend" / "dist"
 
 if FRONTEND_DIST.exists():
