@@ -9,7 +9,7 @@
 ![React](https://img.shields.io/badge/React-19-61DAFB?style=for-the-badge&logo=react&logoColor=black)
 ![TypeScript](https://img.shields.io/badge/TypeScript-6.0-3178C6?style=for-the-badge&logo=typescript&logoColor=white)
 ![Vite](https://img.shields.io/badge/Vite-8.1-646CFF?style=for-the-badge&logo=vite&logoColor=white)
-![Gemini AI](https://img.shields.io/badge/Gemini_AI-2.5_Flash-4285F4?style=for-the-badge&logo=google&logoColor=white)
+![Gemini AI](https://img.shields.io/badge/Gemini_AI-3.5_Flash-4285F4?style=for-the-badge&logo=google&logoColor=white)
 ![Docker](https://img.shields.io/badge/Docker-Ready-2496ED?style=for-the-badge&logo=docker&logoColor=white)
 ![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)
 
@@ -37,7 +37,7 @@
 
 Misleading charts are widespread in media, corporate reporting, and marketing. Truncated axes, improper scales, dual axes, and 3D distortions frequently distort data — turning minor statistical variations into dramatic visual deceptions that misinform decision-makers.
 
-**ChartLie Detector** solves this by combining **Google Gemini 2.5 Flash** multimodal vision AI with a deterministic rule engine grounded in the **ACL 2026 Misviz Benchmark**. The platform extracts chart metadata, audits images across 8 deception categories, assigns a weighted Lie Score (0–100), and generates human-readable AI explanations along with downloadable PDF reports.
+**ChartLie Detector** solves this by combining **Google Gemini 3.5 Flash** multimodal vision AI with a deterministic rule engine grounded in the **ACL 2026 Misviz Benchmark**. The platform extracts chart metadata, audits images across 8 deception categories, assigns a weighted Lie Score (0–100), and generates human-readable AI explanations along with downloadable PDF reports.
 
 ---
 
@@ -45,7 +45,7 @@ Misleading charts are widespread in media, corporate reporting, and marketing. T
 
 | Feature | Description |
 |:---|:---|
-| 🤖 **Multimodal VLM Extraction** | Uses Gemini 2.5 Flash to extract axis bounds, scale types, labels, and chart dimensions from images |
+| 🤖 **Multimodal VLM Extraction** | Uses Gemini 3.5 Flash to extract axis bounds, scale types, labels, and chart dimensions from images |
 | ⚙️ **8-Category Deception Engine** | Audits charts for truncated Y-axes, dual axes, 3D distortion, inconsistent scaling, missing labels/source, wrong chart types, and more |
 | ⚖️ **Weighted Lie Scoring** | Deterministic 0–100 deception index: HONEST → SUSPICIOUS → MISLEADING → DECEPTIVE |
 | 📝 **Concise AI Reports** | Converts violations into actionable summaries (What's Wrong → Why It Matters → How to Fix) |
@@ -81,7 +81,7 @@ graph TD
     
     subgraph Pipeline
         API --> VAL["🔍 Image Validator"]
-        VAL --> VLM["🤖 Gemini 2.5 Flash"]
+        VAL --> VLM["🤖 Gemini 3.5 Flash"]
         VLM --> META["📋 Pydantic Schema"]
         META --> RULE["⚙️ Rule Engine (8 checks)"]
         RULE --> SCORE["⚖️ Score Engine"]
@@ -98,7 +98,7 @@ graph TD
 ```mermaid
 flowchart TD
     A["Raw Image"] --> B["SHA-256 Hash Check"]
-    B --> C["Gemini 2.5 Flash VLM Extraction"]
+    B --> C["Gemini 3.5 Flash VLM Extraction"]
     C --> D["Pydantic Validation"]
     D --> E1["Truncated Axis (30 pts)"]
     D --> E2["Dual Axis (25 pts)"]
