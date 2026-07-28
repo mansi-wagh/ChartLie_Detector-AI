@@ -9,12 +9,28 @@
 ![React](https://img.shields.io/badge/React-19-61DAFB?style=for-the-badge&logo=react&logoColor=black)
 ![TypeScript](https://img.shields.io/badge/TypeScript-6.0-3178C6?style=for-the-badge&logo=typescript&logoColor=white)
 ![Vite](https://img.shields.io/badge/Vite-8.1-646CFF?style=for-the-badge&logo=vite&logoColor=white)
-![Gemini AI](https://img.shields.io/badge/Gemini_AI-2.5_Flash-4285F4?style=for-the-badge&logo=google&logoColor=white)
-![LangChain](https://img.shields.io/badge/LangChain-Enabled-1C3C3C?style=for-the-badge&logo=chainlink&logoColor=white)
+![Gemini AI](https://img.shields.io/badge/Gemini_AI-3.5_Flash_Lite-4285F4?style=for-the-badge&logo=google&logoColor=white)
 ![Docker](https://img.shields.io/badge/Docker-Ready-2496ED?style=for-the-badge&logo=docker&logoColor=white)
 ![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)
 
+[Live Demo](https://huggingface.co/spaces/YOUR_USERNAME/ChartLie-Detector) · [Report Bug](https://github.com/mansi-wagh/ChartLie_Detector-AI/issues) · [Request Feature](https://github.com/mansi-wagh/ChartLie_Detector-AI/issues)
+
 </div>
+
+---
+
+## 🖼️ Screenshots
+
+<!-- Add your screenshots here. Replace the placeholder text with actual image paths. -->
+<!-- Example: ![Dashboard](docs/screenshots/dashboard.png) -->
+
+| Upload & Analyze | Audit Results | PDF Report |
+|:---:|:---:|:---:|
+| *Add screenshot* | *Add screenshot* | *Add screenshot* |
+
+| Settings Page | History Page |
+|:---:|:---:|
+| *Add screenshot* | *Add screenshot* |
 
 ---
 
@@ -26,6 +42,7 @@
 - [Architecture](#-architecture)
 - [Setup Guide](#-setup-guide)
 - [API Documentation](#-api-documentation)
+- [Deployment](#-deployment)
 - [Future Improvements](#-future-improvements)
 - [License](#-license)
 
@@ -35,327 +52,224 @@
 
 Misleading charts are widespread in media, corporate reporting, and marketing. Truncated axes, improper scales, dual axes, and 3D distortions frequently distort data, turning minor statistical variations into dramatic visual deceptions that misinform decision-makers.
 
-**ChartLie Detector** solves this by combining Google Gemini 2.5 Flash Multimodal Vision AI with a deterministic rule engine grounded in the **ACL 2026 Misviz Benchmark**. The platform extracts chart metadata, audits images across 8 deception categories, assigns a weighted Lie Score (0–100), and generates human-readable AI explanations along with downloadable PDF reports.
+**ChartLie Detector** solves this by combining Google Gemini 3.5 Flash Lite Multimodal Vision AI with a deterministic rule engine grounded in the **ACL 2026 Misviz Benchmark**. The platform extracts chart metadata, audits images across 7 deception categories, assigns a weighted Lie Score (0–100), and generates human-readable AI explanations along with downloadable PDF reports.
 
 ---
 
 ## ✨ Key Features
 
-- **Multimodal VLM Extraction** — Uses Google Gemini 2.5 Flash to automatically extract axis bounds, scale types, labels, and chart dimensions.
-- **8-Category Deception Engine** — Audits charts against established Misviz rules including truncated Y-axes, dual axes, and inconsistent scaling.
-- **Weighted Lie Scoring** — Calculates a deterministic 0–100 deception index categorized into 5 distinct severity bands.
-- **LangChain Explanation Generator** — Converts visual violations into plain-English analytical breakdown reports.
-- **Automated PDF Export** — Compiles structured audit logs, visual metadata, and AI reports into downloadable PDF documents using ReportLab.
-- **In-Memory Result Caching** — Prevents redundant AI processing calls for identical image uploads via hash verification.
-- **Interactive React Dashboard** — Dark-themed React 19 interface with real-time chart analysis, visual history, and metrics tracking.
-- **Containerized Infrastructure** — Fully Dockerized microservices stack powered by Docker Compose.
+| Feature | Description |
+|:---|:---|
+| 🤖 **Multimodal VLM Extraction** | Uses Gemini 3.5 Flash Lite to extract axis bounds, scale types, labels, and chart dimensions from images |
+| ⚙️ **7-Category Deception Engine** | Audits charts for truncated Y-axes, dual axes, 3D distortion, inconsistent scaling, missing labels/source, and wrong chart types |
+| ⚖️ **Weighted Lie Scoring** | Deterministic 0–100 deception index: HONEST → SUSPICIOUS → MISLEADING → DECEPTIVE |
+| 📝 **Concise AI Reports** | Converts violations into actionable summaries (What's Wrong → Why It Matters → How to Fix) |
+| 📄 **PDF Export** | Professional PDF reports with tables, violations breakdown, and AI analysis |
+| 🔑 **Bring Your Own API Key** | Users can add their Gemini API key in Settings — no setup friction |
+| 🧠 **Smart Caching** | SHA-256 hash-based caching prevents redundant API calls for identical images |
+| 🌙 **Modern React Dashboard** | Dark-themed React 19 UI with real-time analysis, history, and export |
+| 🐳 **One-Click Deploy** | Fully Dockerized for Hugging Face Spaces |
 
 ---
 
 ## 📊 Dataset
 
-### 7.1 Dataset Overview
-
-ChartLie Detector leverages the **Misviz Benchmark dataset (ACL 2026)** curated by **Tonglet et al.** This dataset was chosen because it provides the first standardized, peer-reviewed collection of real-world and synthetic misleading visualizations categorized by specific structural manipulations.
-
-### 7.2 Dataset Source
-
-| Dataset | Purpose | Source |
-|:---|:---|:---|
-| Misviz Benchmark | Rule validation & deception pattern benchmarking | [GitHub / ACL 2026](https://github.com/misviz-benchmark) |
-
-### 7.3 Dataset Structure
+ChartLie Detector leverages the **Misviz Benchmark dataset (ACL 2026)** curated by **Tonglet et al.** — the first standardized, peer-reviewed collection of real-world and synthetic misleading visualizations.
 
 | Feature | Description |
 |:---|:---|
-| `image_id` | Unique identifier for chart visual sample |
 | `chart_type` | Visual form (bar, line, pie, scatter, dual-axis) |
-| `violation_type` | Deception category (truncated axis, inverted axis, missing baseline, etc.) |
-| `ground_truth_metadata` | Hand-annotated axis bounds, zero-points, and tick labels |
+| `misleader` | Deception categories (truncated axis, inverted axis, 3D, misrepresentation, dual axis) |
+| `bbox` | Bounding box annotations for deceptive regions |
 
-### 7.4 Data Preprocessing
-
-- Image validation and resolution standardization (PNG/JPG/WEBP)
-- Image hashing via SHA-256 for response caching
-- JSON schema normalization via Pydantic models prior to rule engine evaluation
-
-### 7.5 Dataset Download
-
-Run the provided helper script inside the backend directory to pull benchmark images:
-
-```bash
-python backend/download_misviz.py
-```
+**Preprocessing:** Image validation (PNG/JPG/WEBP, max 10MB), SHA-256 hashing for caching, Pydantic schema normalization.
 
 ---
 
 ## 🏗️ Architecture
 
-### 8.1 System Architecture
-
-ChartLie Detector operates as a decoupled microservices application. A React 19 frontend communicates over HTTP REST with a FastAPI backend service. The backend coordinates Gemini 2.5 Flash VLM analysis, passes structured JSON through a deterministic rule auditor, aggregates penalty scores, and uses LangChain to generate human-readable reports.
+### System Architecture
 
 ```mermaid
 graph TD
-    UI["🌐 React 19 Frontend"] -->|POST /api/upload| API["🔀 FastAPI Backend Router"]
+    UI["🌐 React 19 Frontend"] -->|POST /api/upload| API["🔀 FastAPI Router"]
     
-    subgraph Execution Pipeline
+    subgraph Pipeline
         API --> VAL["🔍 Image Validator"]
-        VAL --> VLM["🤖 Gemini 2.5 Flash VLM"]
-        VLM --> META["📋 Pydantic ChartMetadata"]
-        META --> RULE["⚙️ Deterministic Rule Engine"]
-        RULE --> SCORE["⚖️ Weighted Scoring Engine"]
-        SCORE --> AI["✨ LangChain Explanation Chain"]
-        AI --> PDF["📄 ReportLab PDF Generator"]
+        VAL --> VLM["🤖 Gemini 3.5 Flash Lite"]
+        VLM --> META["📋 Pydantic Schema"]
+        META --> RULE["⚙️ Rule Engine (7 checks)"]
+        RULE --> SCORE["⚖️ Score Engine"]
+        SCORE --> AI["✨ AI Explanation"]
+        AI --> PDF["📄 PDF Generator"]
     end
     
-    PDF --> RES["✅ JSON + PDF Output"]
+    PDF --> RES["✅ JSON + PDF"]
     RES --> UI
 ```
 
-### 8.2 User Journey
-
-```mermaid
-flowchart LR
-    A["Upload Chart Image"] --> B["Image Validation & Hashing"]
-    B --> C{"In Cache?"}
-    C -->|Yes| D["Return Instant Result"]
-    C -->|No| E["VLM Attribute Extraction"]
-    E --> F["Execute 8 Misviz Audits"]
-    F --> G["Compute Lie Score (0-100)"]
-    G --> H["Generate AI Explanation"]
-    H --> I["Display Results & PDF Download"]
-```
-
-### 8.3 Pipeline Flow
+### Pipeline Flow
 
 ```mermaid
 flowchart TD
-    A["Raw Image File"] --> B["SHA-256 Hash Verification"]
-    B --> C["Gemini 2.5 Flash Metadata Extraction"]
-    C --> D["Structured Pydantic Validation"]
-    D --> E1["Truncated Axis Check (30 pts)"]
-    D --> E2["Dual Axis Check (25 pts)"]
-    D --> E3["Cherry-Picked Range (20 pts)"]
-    D --> E4["Inconsistent Scale (15 pts)"]
-    D --> E5["3D Distortion Check (15 pts)"]
-    E1 & E2 & E3 & E4 & E5 --> F["Calculate Aggregated Lie Score"]
-    F --> G["LangChain Prompt Assembly"]
-    G --> H["Gemini Text Explanation Synthesis"]
-    H --> I["Render Dashboard & Generate PDF"]
+    A["Raw Image"] --> B["SHA-256 Hash Check"]
+    B --> C["Gemini VLM Extraction"]
+    C --> D["Pydantic Validation"]
+    D --> E1["Truncated Axis (30 pts)"]
+    D --> E2["Dual Axis (25 pts)"]
+    D --> E3["Wrong Chart Type (20 pts)"]
+    D --> E4["3D Distortion (15 pts)"]
+    D --> E5["Inconsistent Scale (15 pts)"]
+    D --> E6["Missing Labels (10 pts)"]
+    D --> E7["Missing Source (10 pts)"]
+    E1 & E2 & E3 & E4 & E5 & E6 & E7 --> F["Aggregate Score (0-100)"]
+    F --> G["AI Report"]
+    G --> H["Dashboard + PDF"]
 ```
 
-### 8.4 ER Diagram
+### Severity Bands
 
-```mermaid
-erDiagram
-    ANALYSIS_REPORT {
-        string report_id PK
-        string image_hash UK
-        string chart_type
-        int lie_score
-        string severity_band
-        datetime created_at
-    }
-
-    VIOLATION {
-        string violation_id PK
-        string report_id FK
-        string rule_name
-        int penalty_points
-        string description
-    }
-
-    ANALYSIS_REPORT ||--o{ VIOLATION : "contains"
-```
-
-### 8.5 Component Interaction
-
-```mermaid
-graph LR
-    subgraph Frontend
-        FE["React UI / Vite"]
-    end
-    
-    subgraph Backend Core
-        ROUTER["FastAPI Router"]
-        VLM_SVC["VLMService (Gemini)"]
-        ENG_SVC["RuleEngine"]
-        SCORE_SVC["ScoreEngine"]
-        REPORT_SVC["ReportService (PDF)"]
-    end
-
-    FE -->|HTTP Multi-part Upload| ROUTER
-    ROUTER --> VLM_SVC
-    VLM_SVC --> ENG_SVC
-    ENG_SVC --> SCORE_SVC
-    SCORE_SVC --> REPORT_SVC
-    REPORT_SVC --> ROUTER
-```
+| Score | Rating | Meaning |
+|:---|:---|:---|
+| 0–20 | 🟢 HONEST | Chart follows best practices |
+| 21–50 | 🟡 SUSPICIOUS | Minor irregularities present |
+| 51–75 | 🟠 MISLEADING | Visual choices alter interpretation |
+| 76–100 | 🔴 DECEPTIVE | Significant manipulation detected |
 
 ---
 
 ## ⚙️ Setup Guide
 
-### 9.1 Prerequisites
+### Prerequisites
 
 | Software | Version | Required |
 |:---|:---|:---|
 | Python | 3.11+ | ✅ |
 | Node.js | 18.0+ | ✅ |
 | Docker | 20.10+ | Optional |
-| Gemini API Key | Google AI Studio | ✅ |
+| Gemini API Key | [Get free key](https://aistudio.google.com/apikey) | ✅ |
 
-### 9.2 Project Structure
+### Project Structure
 
 ```text
 ChartLie_Detector/
 ├── backend/
 │   ├── app/
 │   │   ├── api/          # FastAPI route handlers
-│   │   ├── core/         # Logger and app settings
-│   │   ├── langchain/    # Explanation generation chains
+│   │   ├── core/         # Config, logger, Gemini client
+│   │   ├── langchain/    # AI explanation generation
 │   │   ├── models/       # Pydantic schemas
-│   │   ├── rules/        # 8 Misviz rule check implementations
-│   │   ├── scoring/      # Lie score calculations & weights
-│   │   └── services/     # VLM, PDF, and analysis orchestrators
-│   ├── download_misviz.py# Benchmark dataset download utility
-│   ├── main.py           # Application entrypoint
-│   └── requirements.txt  # Python backend dependencies
+│   │   ├── prompts/      # VLM vision prompts
+│   │   ├── rules/        # 7 deception rule checks
+│   │   ├── scoring/      # Score calculations & weights
+│   │   ├── services/     # VLM, PDF, analysis orchestrators
+│   │   └── utils/        # Image hashing utilities
+│   └── requirements.txt
 ├── frontend/
 │   ├── src/
-│   │   ├── components/   # UI layout, dropzone, and chart components
-│   │   ├── pages/        # Dashboard, Home, History, and Reports
-│   │   ├── services/     # Axios API service handlers
+│   │   ├── components/   # UI layout, charts, upload
+│   │   ├── pages/        # Dashboard, Home, History, Settings, Reports
+│   │   ├── services/     # Axios API service
 │   │   └── types/        # TypeScript declarations
-│   ├── package.json      # Node.js dependencies
-│   └── vite.config.ts    # Vite bundler config
-├── docker-compose.yml    # Multi-container deployment specification
-└── Dockerfile            # Container build instructions
+│   └── package.json
+├── Dockerfile            # Multi-stage build (HF Spaces ready)
+└── docker-compose.yml    # Local multi-container setup
 ```
 
-### 9.3 Environment Variables
+### Quick Start
 
-| Variable | Description | Required |
-|:---|:---|:---|
-| `GEMINI_API_KEY` | Google Gemini API key for VLM and text generation | ✅ |
-| `BACKEND_URL` | Endpoint URL for API communication (`http://localhost:8000`) | Optional |
-
-### 9.4 Installation Guide
-
-#### Backend Setup
-
+**Backend:**
 ```bash
 cd backend
 python -m venv venv
-# Linux/macOS: source venv/bin/activate
-# Windows: venv\Scripts\activate
+.\venv\Scripts\Activate        # Windows
+# source venv/bin/activate     # macOS/Linux
 pip install -r requirements.txt
-cp .env.example .env  # Add GEMINI_API_KEY to .env
+# Add GEMINI_API_KEY to backend/.env
 uvicorn app.main:app --reload --port 8000
 ```
 
-#### Frontend Setup
-
+**Frontend:**
 ```bash
 cd frontend
 npm install
 npm run dev
 ```
 
-### 9.5 Five-Minute Quick Start
-
-1. Clone the repository: `git clone https://github.com/your-username/ChartLie_Detector.git`
-2. Open terminal in project root and launch via Docker Compose:
-   ```bash
-   docker-compose up --build
-   ```
-3. Open `http://localhost:5173` in your browser.
-4. Upload any chart image (PNG/JPG/WEBP).
-5. Review detected violations, Lie Score, AI explanation, and export PDF!
+Open **http://localhost:5173** → Upload a chart → View results!
 
 ---
 
 ## 📡 API Documentation
 
-### 10.1 Authentication
-
-The current standalone version operates without user login. API requests require a valid backend configuration with `GEMINI_API_KEY` configured in `.env`.
-
-### 10.2 API Endpoints
+### Endpoints
 
 | Method | Endpoint | Description |
 |:---|:---|:---|
-| `POST` | `/api/upload` | Upload chart image for analysis, scoring, and report generation |
-| `GET` | `/api/history` | Retrieve log of previously analyzed visualization reports |
-| `GET` | `/docs` | Interactive Swagger API documentation |
+| `POST` | `/api/upload` | Upload chart image for full analysis |
+| `GET` | `/health` | Health check |
+| `GET` | `/docs` | Interactive Swagger docs |
 
-### 10.3 Error Responses
+### Optional Headers
 
-| Code | Meaning |
+| Header | Description |
 |:---|:---|
-| `200` | Analysis complete |
-| `400` | Unsupported file format or unreadable image file |
-| `422` | Request payload validation failure |
-| `500` | VLM API communication error |
+| `X-Gemini-Key` | User's own Gemini API key (overrides server default) |
 
-### 10.4 Usage Guide
-
-Example analysis request via cURL:
+### Example
 
 ```bash
 curl -X POST "http://localhost:8000/api/upload" \
-  -H "accept: application/json" \
   -H "Content-Type: multipart/form-data" \
-  -F "file=@sample_chart.png"
+  -H "X-Gemini-Key: YOUR_KEY" \
+  -F "file=@chart.png"
 ```
-
-Example JSON response snippet:
 
 ```json
 {
-  "chart_info": {
-    "chart_type": "bar",
-    "y_axis_starts_at_zero": false
-  },
+  "status": "success",
+  "chart_info": { "chart_type": "bar", "y_axis_start": 50 },
   "violations": [
-    {
-      "rule": "Truncated Y-axis",
-      "severity": "high",
-      "weight": 30
-    }
+    { "rule": "Truncated Y-axis", "severity": "High", "weight": 30 }
   ],
-  "analysis": {
-    "score": 30,
-    "severity": "Misleading"
-  }
+  "analysis": { "score": 75, "severity": "MISLEADING" },
+  "pdf_url": "/api/reports/chart.pdf"
 }
 ```
 
-### 10.5 Deployment Guide
+---
 
-Deploy using Docker Compose for containerized production:
+## 🚀 Deployment
+
+### Hugging Face Spaces (Recommended — Free)
+
+1. Create a Space at [huggingface.co/new-space](https://huggingface.co/new-space) → SDK: **Docker**, Hardware: **CPU basic**
+2. Add secrets in Space Settings:
+   - `GEMINI_API_KEY` = your key
+   - `GEMINI_MODEL` = `gemini-3.5-flash-lite`
+3. Push:
+   ```bash
+   git remote add hf https://huggingface.co/spaces/YOUR_USERNAME/ChartLie-Detector
+   git push hf main
+   ```
+4. Wait 3–5 min → App is live! 🎉
+
+### Docker (Local)
 
 ```bash
-docker-compose up -d --build
+docker-compose up --build
+# App: http://localhost:80 | API: http://localhost:8000
 ```
-
-Configured ports:
-- Frontend: `http://localhost:5173` (or port `7860` on Hugging Face Spaces)
-- Backend: `http://localhost:8000`
 
 ---
 
-## 🚀 Future Improvements
+## 🔮 Future Improvements
 
-- **Interactive Box Cropping** — Allow users to crop specific sub-charts in multi-panel figures
-- **OCR Text Correction Engine** — Cross-reference blurry axis text with chart data points
-- **Browser Extension** — Fact-check web charts directly while browsing news websites
-- **Batch Processing API** — Enable enterprise bulk audit uploads for research teams
-- **Custom Rule Builder** — Allow organizations to define custom compliance style guides
-- **Fine-Tuned Vision Models** — Train open-weight LLaVA/Qwen-VL models specifically on Misviz
-- **Multi-Language Explanations** — Produce report outputs in Spanish, French, German, and Hindi
-- **Automated Chart Reconstruction** — Generate a corrected version of the misleading chart automatically
+- **Interactive Box Cropping** — Crop sub-charts in multi-panel figures
+- **Browser Extension** — Fact-check charts while browsing news
+- **Batch Processing API** — Bulk audit uploads for research teams
+- **Fine-Tuned Vision Models** — Train open-weight models on Misviz data
+- **Automated Chart Reconstruction** — Generate corrected versions of misleading charts
 
 ---
 

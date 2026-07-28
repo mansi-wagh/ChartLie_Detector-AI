@@ -1,27 +1,21 @@
 # Simple string template — no external dependencies needed.
 
 AUDIT_TEMPLATE = """
-You are a data visualization expert.
+You are a data visualization auditor. Be concise.
 
-Chart Analysis
-
-Score: {score}
-
-Severity: {severity}
-
+Score: {score} | Severity: {severity}
 Violations: {violations}
 
-Generate:
+Respond in this exact format (keep each section to 2-3 sentences max):
 
-1. Plain English Explanation
+**What's Wrong:** Briefly state the issues found.
 
-2. Why this is misleading
+**Why It Matters:** One line on how it misleads viewers.
 
-3. Suggested Fix
+**How to Fix:** Concrete fix in 1-2 bullet points.
 
-4. Educational Tip
-
-Answer professionally.
+If no violations are critical, state the chart is mostly fair.
+Do NOT use markdown headers. Keep total response under 150 words.
 """
 
 

@@ -1,14 +1,17 @@
 import { useState, useEffect } from "react";
-import { Settings as SettingsIcon, ShieldCheck, Database, Sliders, Info, Trash2, Server, Key } from "lucide-react";
+import { Settings as SettingsIcon, ShieldCheck, Database, Sliders, Info, Trash2, Server, Key, Eye, EyeOff } from "lucide-react";
 import Layout from "../components/layout/Layout";
 import api from "../services/api";
 
 export default function Settings() {
   const [theme, setTheme] = useState(() => localStorage.getItem("theme") || "dark");
   const [backendUrl, setBackendUrl] = useState(() => localStorage.getItem("backend_url") || "/api");
+  const [geminiKey, setGeminiKey] = useState(() => localStorage.getItem("gemini_api_key") || "");
+  const [showKey, setShowKey] = useState(false);
   const [apiStatus, setApiStatus] = useState<"Checking" | "Online" | "Offline">("Checking");
   const [geminiStatus, setGeminiStatus] = useState<"Checking" | "Active" | "Offline">("Checking");
   const [saveStatus, setSaveStatus] = useState("");
+  const [keySaveStatus, setKeySaveStatus] = useState("");
   const [clearStatus, setClearStatus] = useState("");
 
   useEffect(() => {
@@ -36,6 +39,17 @@ export default function Settings() {
     setTimeout(() => setSaveStatus(""), 3000);
   };
 
+  const handleSaveGeminiKey = () => {
+    if (geminiKey.trim()) {
+      localStorage.setItem("gemini_api_key", geminiKey.trim());
+      setKeySaveStatus("API key saved! It will be used for all analyses.");
+    } else {
+      localStorage.removeItem("gemini_api_key");
+      setKeySaveStatus("API key removed. Using server default.");
+    }
+    setTimeout(() => setKeySaveStatus(""), 4000);
+  };
+
   const handleThemeChange = (newTheme: string) => {
     setTheme(newTheme);
     localStorage.setItem("theme", newTheme);
@@ -51,6 +65,7 @@ export default function Settings() {
   const setHistoryDefault = () => {
     setTheme("dark");
     setBackendUrl("/api");
+    setGeminiKey("");
   };
 
   return (
@@ -63,13 +78,60 @@ export default function Settings() {
           </span>
           <h1 className="text-xl font-bold tracking-tight text-white mt-1">Application Settings</h1>
           <p className="text-sm text-slate-400 mt-1.5 leading-relaxed">
-            Configure backend URL endpoints, select themes, verify AI connection statuses, and manage cached storage logs.
+            Configure your Gemini API key, backend URL, themes, and manage cached data.
           </p>
         </div>
 
         <div className="grid gap-6 md:grid-cols-2">
           {/* Left Column (Configurations) */}
           <div className="space-y-6">
+            {/* Gemini API Key Card */}
+            <div className="glass-panel rounded-2xl p-5 space-y-4 border border-violet-500/20">
+              <h3 className="text-sm font-semibold text-white flex items-center gap-2">
+                <Key className="h-4.5 w-4.5 text-violet-400" />
+                <span>Gemini API Key</span>
+                <span className="text-[9px] font-bold uppercase bg-violet-600/20 text-violet-400 px-1.5 py-0.5 rounded-full">Recommended</span>
+              </h3>
+              <p className="text-[11px] text-slate-400 leading-relaxed">
+                Add your own Gemini API key to analyze charts. Get one free at{" "}
+                <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener noreferrer" className="text-violet-400 hover:text-violet-300 underline underline-offset-2">
+                  Google AI Studio
+                </a>.
+              </p>
+              <div className="space-y-3">
+                <label className="text-[10px] font-semibold text-slate-500 uppercase">API Key</label>
+                <div className="flex gap-2">
+                  <div className="relative flex-1">
+                    <input
+                      type={showKey ? "text" : "password"}
+                      value={geminiKey}
+                      onChange={(e) => setGeminiKey(e.target.value)}
+                      placeholder="AIza..."
+                      className="w-full rounded-xl border border-white/10 bg-[#0f0f15]/40 px-3.5 py-2 pr-9 text-xs text-slate-200 outline-none focus:border-violet-500/50"
+                    />
+                    <button
+                      onClick={() => setShowKey(!showKey)}
+                      className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300 cursor-pointer"
+                    >
+                      {showKey ? <EyeOff className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />}
+                    </button>
+                  </div>
+                  <button
+                    onClick={handleSaveGeminiKey}
+                    className="rounded-xl bg-gradient-to-r from-violet-600 to-indigo-600 px-4 py-2 text-xs font-semibold text-white hover:opacity-90 transition-all cursor-pointer"
+                  >
+                    Save
+                  </button>
+                </div>
+                {keySaveStatus && <p className="text-[10px] text-emerald-400 font-semibold">{keySaveStatus}</p>}
+                {!geminiKey && (
+                  <p className="text-[10px] text-amber-400/70 leading-relaxed">
+                    No key set — using server default key (may have rate limits).
+                  </p>
+                )}
+              </div>
+            </div>
+
             {/* Theme Card */}
             <div className="glass-panel rounded-2xl p-5 space-y-4">
               <h3 className="text-sm font-semibold text-white flex items-center gap-2">
@@ -126,14 +188,14 @@ export default function Settings() {
                 <span>Storage Cleanup</span>
               </h3>
               <p className="text-xs text-slate-400 leading-relaxed">
-                Purge all audited chart history and reset the client-side system configurations back to default settings.
+                Clear all cached analyses and reset settings to defaults.
               </p>
               <button
                 onClick={handleClearCache}
                 className="flex items-center gap-2 rounded-xl border border-red-500/20 bg-red-500/5 hover:bg-red-500/10 px-4 py-2.5 text-xs font-semibold text-red-400 transition-all cursor-pointer"
               >
                 <Trash2 className="h-3.5 w-3.5" />
-                <span>Clear Cache & Reset Ledger</span>
+                <span>Clear Cache & Reset</span>
               </button>
               {clearStatus && <p className="text-[10px] text-emerald-400 font-semibold">{clearStatus}</p>}
             </div>
@@ -170,7 +232,7 @@ export default function Settings() {
                 <span>About ChartLieDetector</span>
               </h3>
               <p className="text-xs text-slate-400 leading-relaxed">
-                ChartLieDetector AI leverages cutting-edge computer vision models alongside multi-rule checks to audit structural parameters in charts, detecting non-uniform scales, 3D visual projections, dual-axis contradictions, and general graph manipulation attempts.
+                ChartLieDetector AI uses vision-language models and rule-based checks to audit charts for misleading techniques like truncated axes, 3D distortion, and dual-axis manipulation.
               </p>
               <div className="border-t border-white/5 pt-3.5 flex items-center justify-between">
                 <span className="text-[10px] font-semibold text-slate-500 uppercase">Version</span>

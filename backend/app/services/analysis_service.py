@@ -15,7 +15,7 @@ from app.services.report_service import generate_pdf_report
 from app.core.logging import logger
 
 
-def analyze_image(image_path: str, mime_type: str, filename: str) -> dict:
+def analyze_image(image_path: str, mime_type: str, filename: str, api_key: str | None = None) -> dict:
     """
     Run the full analysis pipeline on an uploaded chart image.
 
@@ -30,7 +30,7 @@ def analyze_image(image_path: str, mime_type: str, filename: str) -> dict:
     logger.info(f"[Analysis] Starting pipeline for: {image_path}")
 
     # Step 1: Gemini Vision — extract structured chart metadata (1 API call)
-    chart_info = analyze_chart(image_path, mime_type)
+    chart_info = analyze_chart(image_path, mime_type, api_key=api_key)
 
     # Step 2: Rule Engine — detect misleading patterns (no API call)
     violations = analyze_rules(chart_info)
@@ -41,7 +41,7 @@ def analyze_image(image_path: str, mime_type: str, filename: str) -> dict:
     logger.info(f"[Analysis] Score: {analysis['score']} | Severity: {analysis['severity']}")
 
     # Step 4: Gemini Report — generate plain-English explanation (1 API call)
-    report = generate_report(analysis["score"], analysis["severity"], violations)
+    report = generate_report(analysis["score"], analysis["severity"], violations, api_key=api_key)
 
     # Step 5: PDF — build downloadable report (no API call)
     pdf_path = generate_pdf_report(

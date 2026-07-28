@@ -2,7 +2,7 @@
 VLM service — sends chart images to Gemini for structured analysis.
 
 API usage: 1 Gemini call per upload.
-Model is configured via GEMINI_MODEL in .env (default: gemini-2.0-flash).
+Model is configured via GEMINI_MODEL in .env (default: gemini-3.5-flash-lite).
 """
 
 import json
@@ -17,7 +17,7 @@ from app.prompts.vision_prompt import VISION_PROMPT
 
 
 
-def analyze_chart(image_path: str, mime_type: str) -> dict:
+def analyze_chart(image_path: str, mime_type: str, api_key: str | None = None) -> dict:
     """
     Read the chart image and send it to Gemini for structured analysis.
 
@@ -50,7 +50,7 @@ def analyze_chart(image_path: str, mime_type: str) -> dict:
                 f"size: {len(image_bytes):,} bytes")
 
     try:
-        client = get_genai_client()
+        client = get_genai_client(api_key=api_key)
         response = client.models.generate_content(
             model=GEMINI_MODEL,
             contents=[
@@ -62,7 +62,8 @@ def analyze_chart(image_path: str, mime_type: str) -> dict:
             ],
             config=types.GenerateContentConfig(
                 system_instruction="You are an expert data visualization auditor and vision-language model. Analyze chart images with extreme accuracy.",
-                temperature=0.1,
+                temperature=0.0,
+                max_output_tokens=1024,
                 response_mime_type="application/json",
                 response_schema=ChartInfo,
             ),

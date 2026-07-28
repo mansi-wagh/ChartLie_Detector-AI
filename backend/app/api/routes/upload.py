@@ -6,7 +6,7 @@ API usage: delegates 2 Gemini calls via analysis_service (see analysis_service.p
 
 from pathlib import Path
 
-from fastapi import APIRouter, UploadFile, File, HTTPException
+from fastapi import APIRouter, UploadFile, File, HTTPException, Header
 
 from app.services.image_validator import validate_image
 from app.utils.image_hash import generate_image_hash
@@ -24,7 +24,7 @@ logger.info(f"[Upload] Upload directory: {UPLOAD_DIR}")
 
 
 @router.post("/upload")
-async def upload_chart(file: UploadFile = File(...)):
+async def upload_chart(file: UploadFile = File(...), x_gemini_key: str | None = Header(None)):
 
     logger.info(f"[Upload] Received file: {file.filename}")
 
@@ -70,7 +70,8 @@ async def upload_chart(file: UploadFile = File(...)):
         result = analyze_image(
             image_path=str(save_path),
             mime_type=file.content_type,
-            filename=file.filename.rsplit(".", 1)[0]
+            filename=file.filename.rsplit(".", 1)[0],
+            api_key=x_gemini_key
         )
         # Store in cache
         set_cached_result(image_hash, result)

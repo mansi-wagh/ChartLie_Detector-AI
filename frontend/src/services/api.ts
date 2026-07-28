@@ -13,6 +13,10 @@ api.interceptors.request.use((config) => {
   if (customUrl) {
     config.baseURL = customUrl;
   }
+  const geminiKey = localStorage.getItem("gemini_api_key");
+  if (geminiKey) {
+    config.headers["X-Gemini-Key"] = geminiKey;
+  }
   return config;
 });
 

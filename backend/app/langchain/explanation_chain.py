@@ -2,7 +2,7 @@
 Explanation chain — generates a plain-English audit report via Gemini.
 
 API usage: 1 Gemini call per upload.
-Model is configured via GEMINI_MODEL in .env (default: gemini-2.0-flash).
+Model is configured via GEMINI_MODEL in .env (default: gemini-3.5-flash-lite).
 """
 
 from google.genai import types
@@ -12,7 +12,7 @@ from app.core.logging import logger
 from app.langchain.prompt_template import audit_prompt
 
 
-def generate_report(score: int, severity: str, violations: list) -> str:
+def generate_report(score: int, severity: str, violations: list, api_key: str | None = None) -> str:
     """
     Generate a human-readable audit explanation for the detected violations.
 
@@ -32,14 +32,14 @@ def generate_report(score: int, severity: str, violations: list) -> str:
 
     logger.info(f"[Report] Sending to Gemini — model: {GEMINI_MODEL}")
 
-    client = get_genai_client()
+    client = get_genai_client(api_key=api_key)
     response = client.models.generate_content(
         model=GEMINI_MODEL,
         contents=prompt,
         config=types.GenerateContentConfig(
             system_instruction="You are a senior data visualization auditor.",
-            temperature=0.3,
-            max_output_tokens=2048,
+            temperature=0.1,
+            max_output_tokens=1024,
         )
     )
 

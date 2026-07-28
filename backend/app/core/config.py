@@ -5,18 +5,19 @@ from google import genai
 load_dotenv()
 
 # Gemini API — standard default model
-GEMINI_MODEL: str = os.getenv("GEMINI_MODEL", "gemini-2.0-flash")
+GEMINI_MODEL: str = os.getenv("GEMINI_MODEL", "gemini-3.5-flash-lite")
 
 
-def get_genai_client() -> genai.Client:
+def get_genai_client(api_key: str | None = None) -> genai.Client:
     """
-    Dynamically retrieve GEMINI_API_KEY from environment variables or HF Secrets,
-    and return an initialized GenAI client instance.
+    Return an initialized GenAI client.
+
+    Priority: user-supplied api_key > env GEMINI_API_KEY.
     """
-    api_key = os.getenv("GEMINI_API_KEY", "").strip()
-    if not api_key:
+    key = (api_key or "").strip() or os.getenv("GEMINI_API_KEY", "").strip()
+    if not key:
         raise RuntimeError(
-            "GEMINI_API_KEY environment variable is missing. "
-            "Please set GEMINI_API_KEY in your .env file or Hugging Face Space Secrets."
+            "No Gemini API key available. "
+            "Please provide one in Settings or set GEMINI_API_KEY in your .env file."
         )
-    return genai.Client(api_key=api_key)
+    return genai.Client(api_key=key)
